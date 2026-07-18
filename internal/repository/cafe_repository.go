@@ -35,7 +35,11 @@ func (c *cafeRepository) GetByID(ctx context.Context, id int) (*model.Cafe, erro
 			address,
 			latitude,
 			longitude,
-			created_at
+			nearest_station,
+			opening_time,
+			closing_time,
+			created_at,
+			updated_at
 		FROM cafes
 		WHERE id = $1`,
 		id,
@@ -45,7 +49,11 @@ func (c *cafeRepository) GetByID(ctx context.Context, id int) (*model.Cafe, erro
 		&cafe.Address,
 		&cafe.Latitude,
 		&cafe.Longitude,
+		&cafe.NearestStation,
+		&cafe.OpeningTime,
+		&cafe.ClosingTime,
 		&cafe.CreatedAt,
+		&cafe.UpdatedAt,
 	)
 	if err != nil {
 		return nil, err
@@ -95,6 +103,9 @@ func (c *cafeRepository) Create(ctx context.Context, cafe *model.Cafe) error {
 			address,
 			latitude,
 			longtitude,
+			nearest_station,
+			opening_time,
+			closing_time
 		)
 		VALUES ($1, $2, $3, $4)	
 		`,
@@ -102,6 +113,9 @@ func (c *cafeRepository) Create(ctx context.Context, cafe *model.Cafe) error {
 		cafe.Address,
 		cafe.Latitude,
 		cafe.Longitude,
+		cafe.NearestStation,
+		cafe.OpeningTime,
+		cafe.ClosingTime,
 	)
 	return err
 }
