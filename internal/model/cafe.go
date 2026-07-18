@@ -17,11 +17,11 @@ type Cafe struct {
 }
 
 type CafeUpdate struct {
-	Name           string    `json:"name,omitempty"`
-	Address        string    `json:"address,omitempty"`
-	Latitude       float64   `json:"latitude,omitempty"`
-	Longitude      float64   `json:"longitude,omitempty"`
-	NearestStation string    `json:"nearest_station,omitempty"`
-	OpeningTime    time.Time `json:"opening_time,omitempty"`
-	ClosingTime    time.Time `json:"closing_time,omitempty"`
+	Name           *string    `json:"name,omitempty"`
+	Address        *string    `json:"address,omitempty"`
+	Latitude       *float64   `json:"latitude,omitempty"`
+	Longitude      *float64   `json:"longitude,omitempty"`
+	NearestStation *string    `json:"nearest_station,omitempty"`
+	OpeningTime    *time.Time `json:"opening_time,omitempty"`
+	ClosingTime    *time.Time `json:"closing_time,omitempty"`
 }
