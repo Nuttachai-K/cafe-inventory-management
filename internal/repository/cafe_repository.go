@@ -2,6 +2,10 @@ package repository
 
 import (
 	"context"
+	"database/sql"
+	"errors"
+	"fmt"
+	"strings"
 
 	"github.com/Nuttachai-K/cafe-finder-api/internal/model"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -10,8 +14,10 @@ import (
 // CafeResoisitory defines database operation for cafe
 type CafeRepository interface {
 	GetByID(ctx context.Context, id int) (*model.Cafe, error)
-	GetAll(ctx context.Context) ([]model.Cafe, error)
+	GetAll(ctx context.Context, station string, limit int) ([]model.Cafe, error)
 	Create(ctx context.Context, cafe *model.Cafe) error
+	Update(ctx context.Context, id int, cu *model.CafeUpdate) error
+	Delete(ctx context.Context, id int) error
 }
 
 type cafeRepository struct {
@@ -62,11 +68,41 @@ func (c *cafeRepository) GetByID(ctx context.Context, id int) (*model.Cafe, erro
 	return &cafe, err
 }
 
-func (c *cafeRepository) GetAll(ctx context.Context) ([]model.Cafe, error) {
-	rows, err := c.db.Query(
-		ctx,
-		"SELECT id, name FROM cafes",
-	)
+func (c *cafeRepository) GetAll(
+	ctx context.Context,
+	station string,
+	limit int,
+) ([]model.Cafe, error) {
+
+	query := `
+	SELECT 
+		id,
+		name,
+		address,
+		latitude,
+		longitude,
+		nearest_station,
+		openingtime,
+		closing_time
+	FROM cafes 
+	WHERE 1=1
+	`
+
+	args := []any{}
+	argID := 1
+
+	if station != "" {
+		query += fmt.Sprintf(" AND nearest_station = $%d", argID)
+		args = append(args, station)
+		argID++
+	}
+
+	if limit > 0 {
+		query += fmt.Sprintf(" LIMIT &%d", argID)
+		args = append(args, limit)
+	}
+
+	rows, err := c.db.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -80,6 +116,12 @@ func (c *cafeRepository) GetAll(ctx context.Context) ([]model.Cafe, error) {
 		err := rows.Scan(
 			&cafe.ID,
 			&cafe.Name,
+			&cafe.Address,
+			&cafe.Latitude,
+			&cafe.Longitude,
+			&cafe.NearestStation,
+			&cafe.OpeningTime,
+			&cafe.ClosingTime,
 		)
 		if err != nil {
 			return nil, err
@@ -107,7 +149,7 @@ func (c *cafeRepository) Create(ctx context.Context, cafe *model.Cafe) error {
 			opening_time,
 			closing_time
 		)
-		VALUES ($1, $2, $3, $4)	
+		VALUES ($1, $2, $3, $4, $5, $6, $7)	
 		`,
 		cafe.Name,
 		cafe.Address,
@@ -117,5 +159,79 @@ func (c *cafeRepository) Create(ctx context.Context, cafe *model.Cafe) error {
 		cafe.OpeningTime,
 		cafe.ClosingTime,
 	)
+	return err
+}
+
+func (c *cafeRepository) Update(ctx context.Context, id int, cu *model.CafeUpdate) error {
+
+	setClauses := []string{}
+	args := []interface{}{}
+	argPos := 1
+
+	addClauses := func(column string, value interface{}) {
+		setClauses = append(setClauses, fmt.Sprintf("%s = $%d", column, argPos))
+		args = append(args, value)
+		argPos++
+	}
+
+	if cu.Name != nil {
+		addClauses("name", *cu.Name)
+	}
+	if cu.Address != nil {
+		addClauses("address", *cu.Address)
+	}
+	if cu.Latitude != nil {
+		addClauses("latitude", *cu.Latitude)
+	}
+	if cu.Longitude != nil {
+		addClauses("longitude", *cu.Longitude)
+	}
+	if cu.NearestStation != nil {
+		addClauses("nearest_station", *cu.NearestStation)
+	}
+	if cu.OpeningTime != nil {
+		addClauses("opening_time", *cu.OpeningTime)
+	}
+	if cu.ClosingTime != nil {
+		addClauses("closing_time", *cu.ClosingTime)
+	}
+
+	if len(setClauses) == 0 {
+		return errors.New("no fields to update")
+	}
+
+	setClauses = append(setClauses, "updated_at = NOW()")
+
+	query := fmt.Sprintf(
+		"UPDATE cafes SET %s WHERE id = $1",
+		strings.Join(setClauses, ", "),
+	)
+	args = append([]interface{}{id}, args...)
+
+	result, err := c.db.Exec(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("updated cafe: %w", err)
+	}
+
+	if result.RowsAffected() == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
+}
+
+func (c *cafeRepository) Delete(ctx context.Context, id int) error {
+	result, err := c.db.Exec(
+		ctx,
+		`DELETE FROM cafes
+		WHERE id = $1`,
+		id,
+	)
+	if err != nil {
+		return err
+	}
+	if result.RowsAffected() == 0 {
+		return sql.ErrNoRows
+	}
 	return err
 }
