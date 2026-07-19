@@ -98,7 +98,7 @@ func (c *cafeRepository) GetAll(
 	}
 
 	if limit > 0 {
-		query += fmt.Sprintf(" LIMIT &%d", argID)
+		query += fmt.Sprintf(" LIMIT $%d", argID)
 		args = append(args, limit)
 	}
 
@@ -144,7 +144,7 @@ func (c *cafeRepository) Create(ctx context.Context, cafe *model.Cafe) error {
 			name,
 			address,
 			latitude,
-			longtitude,
+			longitude,
 			nearest_station,
 			opening_time,
 			closing_time
@@ -166,7 +166,7 @@ func (c *cafeRepository) Update(ctx context.Context, id int, cu *model.CafeUpdat
 
 	setClauses := []string{}
 	args := []interface{}{}
-	argPos := 1
+	argPos := 2
 
 	addClauses := func(column string, value interface{}) {
 		setClauses = append(setClauses, fmt.Sprintf("%s = $%d", column, argPos))
