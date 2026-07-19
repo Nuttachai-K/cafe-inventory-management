@@ -2,12 +2,12 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/Nuttachai-K/cafe-finder-api/internal/model"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -210,11 +210,11 @@ func (c *cafeRepository) Update(ctx context.Context, id int, cu *model.CafeUpdat
 
 	result, err := c.db.Exec(ctx, query, args...)
 	if err != nil {
-		return fmt.Errorf("updated cafe: %w", err)
+		return err
 	}
 
 	if result.RowsAffected() == 0 {
-		return sql.ErrNoRows
+		return pgx.ErrNoRows
 	}
 
 	return nil
@@ -231,7 +231,7 @@ func (c *cafeRepository) Delete(ctx context.Context, id int) error {
 		return err
 	}
 	if result.RowsAffected() == 0 {
-		return sql.ErrNoRows
+		return pgx.ErrNoRows
 	}
 	return err
 }
