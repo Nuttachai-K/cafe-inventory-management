@@ -2,10 +2,15 @@ package main
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/joho/godotenv"
 
 	"github.com/Nuttachai-K/cafe-finder-api/internal/database"
+	"github.com/Nuttachai-K/cafe-finder-api/internal/handler"
+	"github.com/Nuttachai-K/cafe-finder-api/internal/repository"
+	"github.com/Nuttachai-K/cafe-finder-api/internal/router"
+	"github.com/Nuttachai-K/cafe-finder-api/internal/service"
 )
 
 func main() {
@@ -22,20 +27,11 @@ func main() {
 	}
 	defer db.Close()
 
-	// ctx := context.Background()
+	repo := repository.NewCafeRepository(db)
+	service := service.NewCafeService(repo)
+	handler := handler.NewCafeHandler(service)
 
-	// var id int
-	// var name string
+	mux := router.NewRouter(handler)
 
-	// err = db.QueryRow(
-	// 	ctx,
-	// 	`SELECT id, name FROM cafes WHERE id = $1`,
-	// 	1,
-	// ).Scan(&id, &name)
-
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// fmt.Println(id, name)
+	http.ListenAndServe(":8080", mux)
 }
