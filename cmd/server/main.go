@@ -6,11 +6,11 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"github.com/Nuttachai-K/cafe-finder-api/internal/database"
-	"github.com/Nuttachai-K/cafe-finder-api/internal/handler"
-	"github.com/Nuttachai-K/cafe-finder-api/internal/repository"
-	"github.com/Nuttachai-K/cafe-finder-api/internal/router"
-	"github.com/Nuttachai-K/cafe-finder-api/internal/service"
+	"github.com/Nuttachai-K/cafe-inventory-management/internal/database"
+	"github.com/Nuttachai-K/cafe-inventory-management/internal/handler"
+	"github.com/Nuttachai-K/cafe-inventory-management/internal/repository"
+	"github.com/Nuttachai-K/cafe-inventory-management/internal/router"
+	"github.com/Nuttachai-K/cafe-inventory-management/internal/service"
 )
 
 func main() {
