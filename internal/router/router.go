@@ -3,7 +3,7 @@ package router
 import (
 	"net/http"
 
-	"github.com/Nuttachai-K/cafe-finder-api/internal/handler"
+	"github.com/Nuttachai-K/cafe-inventory-management/internal/handler"
 )
 
 func NewRouter(cafeHandler *handler.CafeHandler) *http.ServeMux {

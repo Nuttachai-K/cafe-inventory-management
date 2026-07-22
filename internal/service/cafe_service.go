@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Nuttachai-K/cafe-finder-api/internal/model"
-	"github.com/Nuttachai-K/cafe-finder-api/internal/repository"
+	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
+	"github.com/Nuttachai-K/cafe-inventory-management/internal/repository"
 	"github.com/jackc/pgx/v5"
 )
 

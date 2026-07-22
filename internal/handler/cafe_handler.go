@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Nuttachai-K/cafe-finder-api/internal/model"
-	"github.com/Nuttachai-K/cafe-finder-api/internal/service"
+	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
+	"github.com/Nuttachai-K/cafe-inventory-management/internal/service"
 )
 
 type CafeHandler struct {
