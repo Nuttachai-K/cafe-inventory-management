@@ -16,7 +16,7 @@ type CafeRepository interface {
 	GetByID(ctx context.Context, id int) (*model.Cafe, error)
 	GetAll(ctx context.Context, station string, limit int) ([]model.Cafe, error)
 	Create(ctx context.Context, cafe *model.Cafe) error
-	Update(ctx context.Context, id int, cu *model.CafeUpdate) error
+	Update(ctx context.Context, id int, cu *model.CafeUpdate) (*model.Cafe, error)
 	Delete(ctx context.Context, id int) error
 }
 
@@ -82,8 +82,10 @@ func (c *cafeRepository) GetAll(
 		latitude,
 		longitude,
 		nearest_station,
-		openingtime,
-		closing_time
+		opening_time,
+		closing_time,
+		created_at,
+		updated_at
 	FROM cafes 
 	WHERE 1=1
 	`
@@ -122,6 +124,8 @@ func (c *cafeRepository) GetAll(
 			&cafe.NearestStation,
 			&cafe.OpeningTime,
 			&cafe.ClosingTime,
+			&cafe.CreatedAt,
+			&cafe.UpdatedAt,
 		)
 		if err != nil {
 			return nil, err
@@ -138,7 +142,7 @@ func (c *cafeRepository) GetAll(
 }
 
 func (c *cafeRepository) Create(ctx context.Context, cafe *model.Cafe) error {
-	_, err := c.db.Exec(
+	return c.db.QueryRow(
 		ctx,
 		`INSERT INTO cafes(
 			name,
@@ -149,7 +153,8 @@ func (c *cafeRepository) Create(ctx context.Context, cafe *model.Cafe) error {
 			opening_time,
 			closing_time
 		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)	
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		RETURNING id
 		`,
 		cafe.Name,
 		cafe.Address,
@@ -158,11 +163,10 @@ func (c *cafeRepository) Create(ctx context.Context, cafe *model.Cafe) error {
 		cafe.NearestStation,
 		cafe.OpeningTime,
 		cafe.ClosingTime,
-	)
-	return err
+	).Scan(&cafe.ID)
 }
 
-func (c *cafeRepository) Update(ctx context.Context, id int, cu *model.CafeUpdate) error {
+func (c *cafeRepository) Update(ctx context.Context, id int, cu *model.CafeUpdate) (*model.Cafe, error) {
 
 	setClauses := []string{}
 	args := []interface{}{}
@@ -197,7 +201,7 @@ func (c *cafeRepository) Update(ctx context.Context, id int, cu *model.CafeUpdat
 	}
 
 	if len(setClauses) == 0 {
-		return errors.New("no fields to update")
+		return nil, errors.New("no fields to update")
 	}
 
 	setClauses = append(setClauses, "updated_at = NOW()")
@@ -210,14 +214,47 @@ func (c *cafeRepository) Update(ctx context.Context, id int, cu *model.CafeUpdat
 
 	result, err := c.db.Exec(ctx, query, args...)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if result.RowsAffected() == 0 {
-		return pgx.ErrNoRows
+		return nil, pgx.ErrNoRows
 	}
 
-	return nil
+	var cafe model.Cafe
+	err = c.db.QueryRow(
+		ctx,
+		`SELECT
+			id,
+			name,
+			address,
+			latitude,
+			longitude,
+			nearest_station,
+			opening_time,
+			closing_time,
+			created_at,
+			updated_at
+		FROM cafes
+		WHERE id = $1`,
+		id,
+	).Scan(
+		&cafe.ID,
+		&cafe.Name,
+		&cafe.Address,
+		&cafe.Latitude,
+		&cafe.Longitude,
+		&cafe.NearestStation,
+		&cafe.OpeningTime,
+		&cafe.ClosingTime,
+		&cafe.CreatedAt,
+		&cafe.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &cafe, nil
 }
 
 func (c *cafeRepository) Delete(ctx context.Context, id int) error {

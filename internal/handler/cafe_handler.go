@@ -86,7 +86,18 @@ func (h *CafeHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
+	if err := json.NewEncoder(w).Encode(struct {
+		ID      int    `json:"id"`
+		Message string `json:"message"`
+	}{
+		ID:      cafe.ID,
+		Message: "Cafe created successfully",
+	}); err != nil {
+		writeError(w, err)
+	}
+
 }
 
 func (h *CafeHandler) Update(w http.ResponseWriter, r *http.Request) {
@@ -104,12 +115,17 @@ func (h *CafeHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.service.Update(r.Context(), id, &req); err != nil {
+	cafe, err := h.service.Update(r.Context(), id, &req)
+	if err != nil {
 		writeError(w, err)
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(cafe); err != nil {
+		writeError(w, err)
+	}
 }
 
 func (h *CafeHandler) Delete(w http.ResponseWriter, r *http.Request) {
@@ -117,13 +133,13 @@ func (h *CafeHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
 	}
 
 	if err := h.service.Delete(r.Context(), id); err != nil {
 		writeError(w, err)
 		return
 	}
-
 	w.WriteHeader(http.StatusNoContent)
 }
 

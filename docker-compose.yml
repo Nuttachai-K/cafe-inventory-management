@@ -30,5 +30,21 @@ services:
       - "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
       - "up"
 
+  migrate-down:
+    image: migrate/migrate:latest
+    profiles:
+      - tools
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./migrations:/migrations
+    command:
+      - "-path"
+      - "/migrations"
+      - "-database"
+      - "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
+      - "down"
+
 volumes:
   pgdata:
