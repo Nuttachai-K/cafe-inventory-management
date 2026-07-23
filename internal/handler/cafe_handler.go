@@ -149,7 +149,7 @@ func writeError(w http.ResponseWriter, err error) {
 	case errors.Is(err, service.ErrInvalidInput):
 		http.Error(w, err.Error(), http.StatusBadRequest)
 
-	case errors.Is(err, service.ErrCafeNotFound):
+	case errors.Is(err, service.ErrDataNotFound):
 		http.Error(w, err.Error(), http.StatusNotFound)
 
 	default:
