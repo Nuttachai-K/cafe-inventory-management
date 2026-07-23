@@ -2,19 +2,35 @@ package model
 
 // User represent a user in the system
 type User struct {
-	ID           int    `json:"id"`
-	Username     string `json:"username"`
-	Email        string `json:"email"`
-	PasswordHash string `json:"password_hash"`
-	UserRole     string `json:"user_role"`
-	CreatedAt    string `json:"created_at"`
-	UpdatedAt    string `json:"updated_at"`
+	ID           int      `json:"id"`
+	Username     string   `json:"username"`
+	Email        string   `json:"email"`
+	PasswordHash string   `json:"password_hash"`
+	UserRole     UserRole `json:"user_role"`
+	CreatedAt    string   `json:"created_at"`
+	UpdatedAt    string   `json:"updated_at"`
 }
 
 type UserUpdate struct {
-	ID           *int    `json:"id,omitempty"`
-	Username     *string `json:"username,omitempty"`
-	Email        *string `json:"email,omitempty"`
-	PasswordHash *string `json:"password_hash,omitempty"`
-	UserRole     *string `json:"user_role,omitempty"`
+	ID           *int      `json:"id,omitempty"`
+	Username     *string   `json:"username,omitempty"`
+	Email        *string   `json:"email,omitempty"`
+	PasswordHash *string   `json:"password_hash,omitempty"`
+	UserRole     *UserRole `json:"user_role,omitempty"`
+}
+
+type UserRole string
+
+const (
+	RoleAdmin UserRole = "ADMIN"
+	RoleStaff UserRole = "STAFF"
+)
+
+func (r UserRole) Valid() bool {
+	switch r {
+	case RoleAdmin, RoleStaff:
+		return true
+	default:
+		return false
+	}
 }
