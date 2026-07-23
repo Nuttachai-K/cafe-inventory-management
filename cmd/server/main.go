@@ -27,11 +27,15 @@ func main() {
 	}
 	defer db.Close()
 
-	repo := repository.NewCafeRepository(db)
-	service := service.NewCafeService(repo)
-	handler := handler.NewCafeHandler(service)
+	cafeRepo := repository.NewCafeRepository(db)
+	cafeService := service.NewCafeService(cafeRepo)
+	cafeHandler := handler.NewCafeHandler(cafeService)
 
-	mux := router.NewRouter(handler)
+	userRepo := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepo)
+	userHandler := handler.NewUserHandler(userService)
+
+	mux := router.NewRouter(cafeHandler, userHandler)
 
 	http.ListenAndServe(":8080", mux)
 }
