@@ -82,8 +82,10 @@ func (c *cafeRepository) GetAll(
 		latitude,
 		longitude,
 		nearest_station,
-		openingtime,
-		closing_time
+		opening_time,
+		closing_time,
+		created_at,
+		updated_at
 	FROM cafes 
 	WHERE 1=1
 	`
@@ -122,6 +124,8 @@ func (c *cafeRepository) GetAll(
 			&cafe.NearestStation,
 			&cafe.OpeningTime,
 			&cafe.ClosingTime,
+			&cafe.CreatedAt,
+			&cafe.UpdatedAt,
 		)
 		if err != nil {
 			return nil, err
@@ -138,7 +142,7 @@ func (c *cafeRepository) GetAll(
 }
 
 func (c *cafeRepository) Create(ctx context.Context, cafe *model.Cafe) error {
-	_, err := c.db.Exec(
+	return c.db.QueryRow(
 		ctx,
 		`INSERT INTO cafes(
 			name,
@@ -149,7 +153,8 @@ func (c *cafeRepository) Create(ctx context.Context, cafe *model.Cafe) error {
 			opening_time,
 			closing_time
 		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)	
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		RETURNING id
 		`,
 		cafe.Name,
 		cafe.Address,
@@ -158,8 +163,7 @@ func (c *cafeRepository) Create(ctx context.Context, cafe *model.Cafe) error {
 		cafe.NearestStation,
 		cafe.OpeningTime,
 		cafe.ClosingTime,
-	)
-	return err
+	).Scan(&cafe.ID)
 }
 
 func (c *cafeRepository) Update(ctx context.Context, id int, cu *model.CafeUpdate) error {

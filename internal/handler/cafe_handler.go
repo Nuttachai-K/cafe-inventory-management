@@ -86,7 +86,18 @@ func (h *CafeHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
+	if err := json.NewEncoder(w).Encode(struct {
+		ID      int    `json:"id"`
+		Message string `json:"message"`
+	}{
+		ID:      cafe.ID,
+		Message: "Cafe created successfully",
+	}); err != nil {
+		writeError(w, err)
+	}
+
 }
 
 func (h *CafeHandler) Update(w http.ResponseWriter, r *http.Request) {
