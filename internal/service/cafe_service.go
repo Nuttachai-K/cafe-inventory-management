@@ -20,7 +20,7 @@ type CafeService interface {
 	GetByID(ctx context.Context, id int) (*model.Cafe, error)
 	GetAll(ctx context.Context, station string, limit int) ([]model.Cafe, error)
 	Create(ctx context.Context, cafe *model.Cafe) error
-	Update(ctx context.Context, id int, cu *model.CafeUpdate) error
+	Update(ctx context.Context, id int, cu *model.CafeUpdate) (*model.Cafe, error)
 	Delete(ctx context.Context, id int) error
 }
 
@@ -72,20 +72,21 @@ func (s *cafeService) Create(ctx context.Context, cafe *model.Cafe) error {
 	return nil
 }
 
-func (s *cafeService) Update(ctx context.Context, id int, cu *model.CafeUpdate) error {
+func (s *cafeService) Update(ctx context.Context, id int, cu *model.CafeUpdate) (*model.Cafe, error) {
 	if id <= 0 {
-		return fmt.Errorf("%w: invalid id", ErrInvalidInput)
+		return nil, fmt.Errorf("%w: invalid id", ErrInvalidInput)
 	}
 	if cu.Latitude != nil && (*cu.Latitude < -90 || *cu.Latitude > 90) {
-		return fmt.Errorf("%w: invalid latitude", ErrInvalidInput)
+		return nil, fmt.Errorf("%w: invalid latitude", ErrInvalidInput)
 	}
 	if cu.Longitude != nil && (*cu.Longitude < -180 || *cu.Longitude > 180) {
-		return fmt.Errorf("%w: invalid longitude", ErrInvalidInput)
+		return nil, fmt.Errorf("%w: invalid longitude", ErrInvalidInput)
 	}
-	if err := s.repo.Update(ctx, id, cu); err != nil {
-		return translateErr(err)
+	cafe, err := s.repo.Update(ctx, id, cu)
+	if err != nil {
+		return nil, translateErr(err)
 	}
-	return nil
+	return cafe, nil
 }
 
 func (s *cafeService) Delete(ctx context.Context, id int) error {

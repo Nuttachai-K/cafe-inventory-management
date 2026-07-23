@@ -115,12 +115,17 @@ func (h *CafeHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.service.Update(r.Context(), id, &req); err != nil {
+	cafe, err := h.service.Update(r.Context(), id, &req)
+	if err != nil {
 		writeError(w, err)
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(cafe); err != nil {
+		writeError(w, err)
+	}
 }
 
 func (h *CafeHandler) Delete(w http.ResponseWriter, r *http.Request) {
