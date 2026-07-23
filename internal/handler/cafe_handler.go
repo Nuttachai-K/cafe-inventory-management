@@ -128,13 +128,13 @@ func (h *CafeHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
 	}
 
 	if err := h.service.Delete(r.Context(), id); err != nil {
 		writeError(w, err)
 		return
 	}
-
 	w.WriteHeader(http.StatusNoContent)
 }
 
