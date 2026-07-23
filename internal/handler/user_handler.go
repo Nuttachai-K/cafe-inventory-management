@@ -9,43 +9,41 @@ import (
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/service"
 )
 
-type CafeHandler struct {
-	service service.CafeService
+type UserHandler struct {
+	service service.UserService
 }
 
-func NewCafeHandler(service service.CafeService) *CafeHandler {
-	return &CafeHandler{
+func NewUserHandler(service service.UserService) *UserHandler {
+	return &UserHandler{
 		service: service,
 	}
 }
 
-func (h *CafeHandler) GetByID(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(
 			w,
-			"Invalid cafe id",
+			"Invalid user id",
 			http.StatusBadRequest,
 		)
 		return
 	}
 
-	cafe, err := h.service.GetByID(r.Context(), id)
+	user, err := h.service.GetByID(r.Context(), id)
 	if err != nil {
 		writeError(w, err)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(cafe); err != nil {
+	if err := json.NewEncoder(w).Encode(user); err != nil {
 		writeError(w, err)
 	}
 }
 
-func (h *CafeHandler) GetAll(w http.ResponseWriter, r *http.Request) {
-	station := r.URL.Query().Get("station")
-
+func (h *UserHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	limit := 20
 	if l := r.URL.Query().Get("limit"); l != "" {
 		parsed, err := strconv.Atoi(l)
@@ -56,9 +54,8 @@ func (h *CafeHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 		limit = parsed
 	}
 
-	cafes, err := h.service.GetAll(
+	users, err := h.service.GetAll(
 		r.Context(),
-		station,
 		limit,
 	)
 	if err != nil {
@@ -66,21 +63,20 @@ func (h *CafeHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(cafes); err != nil {
+	if err := json.NewEncoder(w).Encode(users); err != nil {
 		writeError(w, err)
 	}
 }
 
-func (h *CafeHandler) Create(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
+	var user model.User
 
-	var cafe model.Cafe
-
-	if err := json.NewDecoder(r.Body).Decode(&cafe); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	if err := h.service.Create(r.Context(), &cafe); err != nil {
+	if err := h.service.Create(r.Context(), &user); err != nil {
 		writeError(w, err)
 		return
 	}
@@ -91,30 +87,28 @@ func (h *CafeHandler) Create(w http.ResponseWriter, r *http.Request) {
 		ID      int    `json:"id"`
 		Message string `json:"message"`
 	}{
-		ID:      cafe.ID,
-		Message: "Cafe created successfully",
+		ID:      user.ID,
+		Message: "User created successfully",
 	}); err != nil {
 		writeError(w, err)
 	}
-
 }
 
-func (h *CafeHandler) Update(w http.ResponseWriter, r *http.Request) {
-
+func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "invalid id", http.StatusBadRequest)
 		return
 	}
 
-	var req model.CafeUpdate
+	var req model.UserUpdate
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	cafe, err := h.service.Update(r.Context(), id, &req)
+	user, err := h.service.Update(r.Context(), id, &req)
 	if err != nil {
 		writeError(w, err)
 		return
@@ -122,12 +116,12 @@ func (h *CafeHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(cafe); err != nil {
+	if err := json.NewEncoder(w).Encode(user); err != nil {
 		writeError(w, err)
 	}
 }
 
-func (h *CafeHandler) Delete(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
