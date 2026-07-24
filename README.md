@@ -84,8 +84,10 @@ This API addresses those challenges by providing centralized management, role-ba
 | Database Driver | pgx |
 | Authentication | JWT |
 | Password Hashing | bcrypt |
+| Container | Docker |
 | Architecture | Layered Architecture |
 | API Style | RESTful API |
+| Infrastructure | 	AWS EC2 |
 | Version Control | Git & GitHub |
 
 ---
@@ -111,6 +113,7 @@ internal/
 migrations/
 docs/
 
+docker-compose.yml
 go.mod
 go.sum
 README.md
@@ -200,7 +203,7 @@ inventory_logs
 | GET | /api/v1/cafes |
 | GET | /api/v1/cafes/{id} |
 | POST | /api/v1/cafes |
-| PUT | /api/v1/cafes/{id} |
+| PATCH | /api/v1/cafes/{id} |
 | DELETE | /api/v1/cafes/{id} |
 
 ---
@@ -212,7 +215,7 @@ inventory_logs
 | GET | /api/v1/cafes/{cafeId}/products |
 | GET | /api/v1/products/{id} |
 | POST | /api/v1/products |
-| PUT | /api/v1/products/{id} |
+| PATCH | /api/v1/products/{id} |
 | DELETE | /api/v1/products/{id} |
 
 ---
@@ -232,8 +235,9 @@ inventory_logs
 | Method | Endpoint |
 |---------|----------|
 | GET | /api/v1/users |
+| GET | /api/v1/users/{id} |
 | POST | /api/v1/users |
-| PUT | /api/v1/users/{id} |
+| PATCH | /api/v1/users/{id} |
 | DELETE | /api/v1/users/{id} |
 
 ---
@@ -274,18 +278,17 @@ Authorization: Bearer <JWT Token>
 
 The API supports:
 
-- Search cafes by nearest station
-- Search cafes by location
-- Filter by product category
-- Sort by distance
-- Sort alphabetically
-- Pagination
+Currently implemented:
+
+ - Search cafes by nearest station
+ - Limit result count
 
 Example:
 
 ```http
-GET /api/v1/cafes?lat=35.681&lng=139.767&page=1&limit=10
+GET /api/v1/cafes?station=Shinjuku%20station&limit=10
 ```
+Distance-based search, category filtering, sorting, and page-based pagination are planned
 
 ---
 
@@ -306,6 +309,8 @@ This project demonstrates knowledge of:
 - Filtering, Sorting, and Pagination
 - Production-style Backend Development
 - Containerization
+- Unit Testing
+- Integration Testing
 
 ---
 
@@ -313,8 +318,6 @@ This project demonstrates knowledge of:
 
 - Google Maps API integration
 - Refresh Token Authentication
-- Unit Testing
-- Integration Testing
 - GitHub Actions CI/CD
 - Swagger / OpenAPI Documentation
 - Product Image Upload
