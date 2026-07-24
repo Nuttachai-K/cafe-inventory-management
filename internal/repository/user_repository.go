@@ -122,7 +122,7 @@ func (u *userRepository) Create(ctx context.Context, user *model.User) error {
 			username,
 			email,
 			password_hash,
-			user_role,
+			user_role
 		)
 		VALUES ($1, $2, $3, $4)
 		RETURNING id
@@ -146,23 +146,23 @@ func (u *userRepository) Update(ctx context.Context, id int, uu *model.UserUpdat
 	}
 
 	if uu.Username != nil {
-		addClauses("name", *uu.Username)
+		addClauses("username", *uu.Username)
 	}
 	if uu.Email != nil {
-		addClauses("address", *uu.Email)
+		addClauses("email", *uu.Email)
 	}
 	if uu.PasswordHash != nil {
-		addClauses("latitude", *uu.PasswordHash)
+		addClauses("password_hash", *uu.PasswordHash)
 	}
 	if uu.UserRole != nil {
-		addClauses("longitude", *uu.UserRole)
+		addClauses("user_role", *uu.UserRole)
 	}
 	if len(setClauses) == 0 {
 		return nil, errors.New("no fields to update")
 	}
 
 	query := fmt.Sprintf(
-		"UPDATE cafes SET %s WHERE id = $1",
+		"UPDATE users SET %s WHERE id = $1",
 		strings.Join(setClauses, ", "),
 	)
 	args = append([]interface{}{id}, args...)

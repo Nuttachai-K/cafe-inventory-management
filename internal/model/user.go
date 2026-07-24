@@ -1,14 +1,16 @@
 package model
 
+import "time"
+
 // User represent a user in the system
 type User struct {
-	ID           int      `json:"id"`
-	Username     string   `json:"username"`
-	Email        string   `json:"email"`
-	PasswordHash string   `json:"password_hash"`
-	UserRole     UserRole `json:"user_role"`
-	CreatedAt    string   `json:"created_at"`
-	UpdatedAt    string   `json:"updated_at"`
+	ID           int       `json:"id"`
+	Username     string    `json:"username"`
+	Email        string    `json:"email"`
+	PasswordHash string    `json:"password_hash"`
+	UserRole     UserRole  `json:"user_role"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type UserUpdate struct {

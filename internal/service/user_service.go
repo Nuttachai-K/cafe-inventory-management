@@ -79,11 +79,13 @@ func (s *userService) Update(ctx context.Context, id int, uu *model.UserUpdate) 
 		return nil, fmt.Errorf("%w: invalid id", ErrInvalidInput)
 	}
 
-	if _, err := mail.ParseAddress(*uu.Email); err != nil {
-		return nil, fmt.Errorf("%w: email is not in correct format", ErrInvalidInput)
+	if uu.Email != nil {
+		if _, err := mail.ParseAddress(*uu.Email); err != nil {
+			return nil, fmt.Errorf("%w: email is not in correct format", ErrInvalidInput)
+		}
 	}
 
-	if !uu.UserRole.Valid() {
+	if uu.UserRole != nil && !uu.UserRole.Valid() {
 		return nil, ErrInvalidUserRole
 	}
 
