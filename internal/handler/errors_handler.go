@@ -16,6 +16,9 @@ func writeError(w http.ResponseWriter, err error) {
 	case errors.Is(err, service.ErrDataNotFound):
 		http.Error(w, err.Error(), http.StatusNotFound)
 
+	case errors.Is(err, service.ErrDuplicateEmail):
+		http.Error(w, err.Error(), http.StatusConflict)
+
 	default:
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
