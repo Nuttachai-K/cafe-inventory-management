@@ -121,7 +121,7 @@ func TestUserService_Create(t *testing.T) {
 	}{
 		{
 			name: "valid user",
-			user: &model.User{Email: "a@example.com", UserRole: model.RoleStaff},
+			user: &model.User{Email: "a@example.com", UserRole: model.RoleStaff, Password: "a"},
 			createFn: func(ctx context.Context, user *model.User) error {
 				return nil
 			},
@@ -129,21 +129,26 @@ func TestUserService_Create(t *testing.T) {
 		},
 		{
 			name:    "invalid email",
-			user:    &model.User{Email: "not-an-email", UserRole: model.RoleStaff},
+			user:    &model.User{Email: "not-an-email", UserRole: model.RoleStaff, Password: "a"},
 			wantErr: ErrInvalidInput,
 		},
 		{
 			name:    "invalid role",
-			user:    &model.User{Email: "a@example.com", UserRole: "OWNER"},
+			user:    &model.User{Email: "a@example.com", UserRole: "OWNER", Password: "a"},
 			wantErr: ErrInvalidUserRole,
 		},
 		{
 			name: "duplicate email",
-			user: &model.User{Email: "a@example.com", UserRole: model.RoleStaff},
+			user: &model.User{Email: "a@example.com", UserRole: model.RoleStaff, Password: "a"},
 			createFn: func(ctx context.Context, user *model.User) error {
 				return &pgconn.PgError{Code: "23505"}
 			},
 			wantErr: ErrDuplicateEmail,
+		},
+		{
+			name:    "Password is empty",
+			user:    &model.User{Email: "b@example.com", UserRole: model.RoleStaff, Password: ""},
+			wantErr: ErrInvalidInput,
 		},
 	}
 	for _, tt := range tests {

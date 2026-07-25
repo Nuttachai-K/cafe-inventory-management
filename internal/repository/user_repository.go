@@ -37,7 +37,6 @@ func (u *userRepository) GetByID(ctx context.Context, id int) (*model.User, erro
 			id,
 			username,
 			email,
-			password_hash,
 			user_role,
 			created_at,
 			updated_at
@@ -48,7 +47,6 @@ func (u *userRepository) GetByID(ctx context.Context, id int) (*model.User, erro
 		&user.ID,
 		&user.Username,
 		&user.Email,
-		&user.PasswordHash,
 		&user.UserRole,
 		&user.CreatedAt,
 		&user.UpdatedAt,
@@ -66,7 +64,6 @@ func (u *userRepository) GetAll(ctx context.Context, limit int) ([]model.User, e
 		id,
 		username,
 		email,
-		password_hash,
 		user_role,
 		created_at,
 		updated_at
@@ -97,7 +94,6 @@ func (u *userRepository) GetAll(ctx context.Context, limit int) ([]model.User, e
 			&user.ID,
 			&user.Username,
 			&user.Email,
-			&user.PasswordHash,
 			&user.UserRole,
 			&user.CreatedAt,
 			&user.UpdatedAt,

@@ -9,6 +9,7 @@ import (
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/repository"
 	"github.com/jackc/pgx/v5/pgconn"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var ()
@@ -62,7 +63,18 @@ func (s *userService) Create(ctx context.Context, user *model.User) error {
 		return ErrInvalidUserRole
 	}
 
-	err := s.repo.Create(ctx, user)
+	if user.Password == "" {
+		return fmt.Errorf("%w: password is required", ErrInvalidInput)
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("hash password: %w", err)
+	}
+	user.PasswordHash = string(hash)
+	user.Password = ""
+
+	err = s.repo.Create(ctx, user)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		// Error from unique constraint in user email"
@@ -87,6 +99,16 @@ func (s *userService) Update(ctx context.Context, id int, uu *model.UserUpdate) 
 
 	if uu.UserRole != nil && !uu.UserRole.Valid() {
 		return nil, ErrInvalidUserRole
+	}
+
+	if uu.Password != nil {
+		hash, err := bcrypt.GenerateFromPassword([]byte(*uu.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return nil, fmt.Errorf("hash password: %w", err)
+		}
+		hashed := string(hash)
+		uu.PasswordHash = &hashed
+		uu.Password = nil
 	}
 
 	user, err := s.repo.Update(ctx, id, uu)
