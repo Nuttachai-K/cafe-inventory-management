@@ -2,18 +2,11 @@ package service
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/repository"
-	"github.com/jackc/pgx/v5"
-)
-
-var (
-	ErrCafeNotFound = errors.New("cafe not found")
-	ErrInvalidInput = errors.New("invalid input")
 )
 
 type CafeService interface {
@@ -41,7 +34,7 @@ func (s *cafeService) GetByID(ctx context.Context, id int) (*model.Cafe, error) 
 
 	cafe, err := s.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, translateErr(err)
+		return nil, fmt.Errorf("%w: cafe", translateErr(err))
 	}
 	return cafe, nil
 }
@@ -67,7 +60,7 @@ func (s *cafeService) Create(ctx context.Context, cafe *model.Cafe) error {
 		return fmt.Errorf("%w: invalid longitude", ErrInvalidInput)
 	}
 	if err := s.repo.Create(ctx, cafe); err != nil {
-		return translateErr(err)
+		return fmt.Errorf("%w: cafe", translateErr(err))
 	}
 	return nil
 }
@@ -84,7 +77,7 @@ func (s *cafeService) Update(ctx context.Context, id int, cu *model.CafeUpdate) 
 	}
 	cafe, err := s.repo.Update(ctx, id, cu)
 	if err != nil {
-		return nil, translateErr(err)
+		return nil, fmt.Errorf("%w: cafe", translateErr(err))
 	}
 	return cafe, nil
 }
@@ -95,14 +88,7 @@ func (s *cafeService) Delete(ctx context.Context, id int) error {
 	}
 
 	if err := s.repo.Delete(ctx, id); err != nil {
-		return translateErr(err)
+		return fmt.Errorf("%w: cafe", translateErr(err))
 	}
 	return nil
-}
-
-func translateErr(err error) error {
-	if errors.Is(err, pgx.ErrNoRows) {
-		return ErrCafeNotFound
-	}
-	return err
 }
