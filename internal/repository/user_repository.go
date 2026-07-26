@@ -14,6 +14,7 @@ import (
 type UserRepository interface {
 	GetByID(ctx context.Context, id int) (*model.User, error)
 	GetAll(ctx context.Context, limit int) ([]model.User, error)
+	GetByEmail(ctx context.Context, email string) (*model.User, error)
 	Create(ctx context.Context, user *model.User) error
 	Update(ctx context.Context, id int, uu *model.UserUpdate) (*model.User, error)
 	Delete(ctx context.Context, id int) error
@@ -56,6 +57,34 @@ func (u *userRepository) GetByID(ctx context.Context, id int) (*model.User, erro
 	}
 
 	return &user, err
+}
+
+func (u *userRepository) GetByEmail(ctx context.Context, email string) (*model.User, error) {
+	var user model.User
+	err := u.db.QueryRow(
+		ctx,
+		`SELECT id, 
+		username, 
+		email, 
+		password_hash,
+		user_role,
+		created_at,
+		updated_at
+		FROM users
+		WHERE email = $1`,
+	).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Email,
+		&user.PasswordHash,
+		&user.UserRole,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 
 func (u *userRepository) GetAll(ctx context.Context, limit int) ([]model.User, error) {
