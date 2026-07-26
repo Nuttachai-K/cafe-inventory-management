@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/repository"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/utils"
 	"golang.org/x/crypto/bcrypt"
@@ -13,7 +14,7 @@ import (
 var ErrInvalidCredentials = errors.New("invalid email or password")
 
 type AuthService interface {
-	Login(ctx context.Context, email, password string) (string, error)
+	Login(ctx context.Context, auth *model.Authentication) (string, error)
 }
 
 type authService struct {
@@ -26,13 +27,13 @@ func NewAuthService(repo repository.UserRepository) AuthService {
 	}
 }
 
-func (s *authService) Login(ctx context.Context, email, password string) (string, error) {
-	user, err := s.repo.GetByEmail(ctx, email)
+func (s *authService) Login(ctx context.Context, auth *model.Authentication) (string, error) {
+	user, err := s.repo.GetByEmail(ctx, auth.Email)
 	if err != nil {
 		return "", fmt.Errorf("%w", ErrInvalidCredentials)
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(auth.Password)); err != nil {
 		return "", ErrInvalidCredentials
 	}
 	return utils.GenerateToken(user.ID, string(user.UserRole))

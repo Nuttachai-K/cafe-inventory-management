@@ -72,6 +72,7 @@ func (u *userRepository) GetByEmail(ctx context.Context, email string) (*model.U
 		updated_at
 		FROM users
 		WHERE email = $1`,
+		email,
 	).Scan(
 		&user.ID,
 		&user.Username,
