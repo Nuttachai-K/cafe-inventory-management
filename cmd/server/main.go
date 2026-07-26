@@ -11,6 +11,7 @@ import (
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/repository"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/router"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/service"
+	"github.com/Nuttachai-K/cafe-inventory-management/internal/utils"
 )
 
 func main() {
@@ -18,6 +19,11 @@ func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
+	}
+
+	err = utils.CheckJWTSecret()
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// Connect with database
