@@ -28,6 +28,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	token, err := h.service.Login(r.Context(), &auth)
 	if err != nil {
+		writeError(w, err)
 		return
 	}
 

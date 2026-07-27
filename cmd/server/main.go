@@ -41,7 +41,10 @@ func main() {
 	userService := service.NewUserService(userRepo)
 	userHandler := handler.NewUserHandler(userService)
 
-	mux := router.NewRouter(cafeHandler, userHandler)
+	authService := service.NewAuthService(userRepo)
+	authHandler := handler.NewAuthHandler(authService)
+
+	mux := router.NewRouter(cafeHandler, userHandler, authHandler)
 
 	http.ListenAndServe(":8080", mux)
 }
