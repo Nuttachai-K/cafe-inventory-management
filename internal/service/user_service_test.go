@@ -25,9 +25,6 @@ func (m *mockUserRepo) GetByID(ctx context.Context, id int) (*model.User, error)
 func (m *mockUserRepo) GetAll(ctx context.Context, limit int) ([]model.User, error) {
 	return m.getAllFn(ctx, limit)
 }
-func (m *mockUserRepo) GetByEmail(ctx context.Context, email string) (*model.User, error) {
-	return m.GetByEmailFn(ctx, email)
-}
 func (m *mockUserRepo) Create(ctx context.Context, user *model.User) error {
 	return m.createFn(ctx, user)
 }

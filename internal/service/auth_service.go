@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
@@ -10,8 +9,6 @@ import (
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 )
-
-var ErrInvalidCredentials = errors.New("invalid email or password")
 
 type AuthService interface {
 	Login(ctx context.Context, auth *model.Authentication) (string, error)
