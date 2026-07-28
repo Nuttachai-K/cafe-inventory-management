@@ -19,6 +19,9 @@ func writeError(w http.ResponseWriter, err error) {
 	case errors.Is(err, service.ErrDuplicateEmail):
 		http.Error(w, err.Error(), http.StatusConflict)
 
+	case errors.Is(err, service.ErrInvalidCredentials):
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+
 	default:
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}

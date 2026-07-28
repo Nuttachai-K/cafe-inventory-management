@@ -11,11 +11,12 @@ import (
 )
 
 type mockUserRepo struct {
-	getByIDFn func(ctx context.Context, id int) (*model.User, error)
-	getAllFn  func(ctx context.Context, limit int) ([]model.User, error)
-	createFn  func(ctx context.Context, user *model.User) error
-	updateFn  func(ctx context.Context, id int, uu *model.UserUpdate) (*model.User, error)
-	deleteFn  func(ctx context.Context, id int) error
+	getByIDFn    func(ctx context.Context, id int) (*model.User, error)
+	getAllFn     func(ctx context.Context, limit int) ([]model.User, error)
+	GetByEmailFn func(ctx context.Context, email string) (*model.User, error)
+	createFn     func(ctx context.Context, user *model.User) error
+	updateFn     func(ctx context.Context, id int, uu *model.UserUpdate) (*model.User, error)
+	deleteFn     func(ctx context.Context, id int) error
 }
 
 func (m *mockUserRepo) GetByID(ctx context.Context, id int) (*model.User, error) {
