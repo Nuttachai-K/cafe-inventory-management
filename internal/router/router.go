@@ -12,7 +12,7 @@ func NewRouter(cafeHandler *handler.CafeHandler, userHandler *handler.UserHandle
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /api/v1/cafes", middleware.Authenticate(cafeHandler.GetAll))
+	mux.HandleFunc("GET /api/v1/cafes", cafeHandler.GetAll)
 	mux.HandleFunc("GET /api/v1/cafes/{id}", cafeHandler.GetByID)
 	mux.HandleFunc("POST /api/v1/cafes", middleware.Authenticate(middleware.RequireRole(model.RoleAdmin)(cafeHandler.Create)))
 	mux.HandleFunc("PATCH /api/v1/cafes/{id}", middleware.Authenticate(middleware.RequireRole(model.RoleAdmin)(cafeHandler.Update)))
