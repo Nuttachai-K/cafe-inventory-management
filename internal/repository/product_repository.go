@@ -12,10 +12,10 @@ import (
 )
 
 type ProductRepository interface {
-	GetByID(ctx context.Context, id int) (*model.Product, error)
-	GetAll(ctx context.Context, limit int) ([]model.Product, error)
+	GetByID(ctx context.Context, id int) (*model.ProductWithCategory, error)
+	GetAll(ctx context.Context, limit int) ([]model.ProductWithCategory, error)
 	Create(ctx context.Context, product *model.Product) error
-	Update(ctx context.Context, id int, pu *model.ProductUpdate) (*model.Product, error)
+	Update(ctx context.Context, id int, pu *model.ProductUpdate) (*model.ProductWithCategory, error)
 	Delete(ctx context.Context, id int) error
 }
 
@@ -29,9 +29,9 @@ func NewProductRepository(db *pgxpool.Pool) ProductRepository {
 	}
 }
 
-func (p *productRepository) GetByID(ctx context.Context, id int) (*model.Product, error) {
+func (p *productRepository) GetByID(ctx context.Context, id int) (*model.ProductWithCategory, error) {
 
-	var product model.Product
+	var product model.ProductWithCategory
 	err := p.db.QueryRow(
 		ctx,
 		`SELECT
@@ -63,13 +63,14 @@ func (p *productRepository) GetByID(ctx context.Context, id int) (*model.Product
 	return &product, err
 }
 
-func (p *productRepository) GetAll(ctx context.Context, limit int) ([]model.Product, error) {
+func (p *productRepository) GetAll(ctx context.Context, limit int) ([]model.ProductWithCategory, error) {
 
 	query := `
 		SELECT
 			id,
 			cafe_id,
 			category_id,
+			category.name,
 			name,
 			description,
 			price,
@@ -93,15 +94,16 @@ func (p *productRepository) GetAll(ctx context.Context, limit int) ([]model.Prod
 	}
 	defer rows.Close()
 
-	var products []model.Product
+	var products []model.ProductWithCategory
 
 	for rows.Next() {
-		var product model.Product
+		var product model.ProductWithCategory
 
 		err := rows.Scan(
 			&product.ID,
 			&product.CafeId,
 			&product.CategoryId,
+			&product.CategoryName,
 			&product.Name,
 			&product.Description,
 			&product.Price,
@@ -144,7 +146,7 @@ func (p *productRepository) Create(ctx context.Context, product *model.Product) 
 	).Scan(&product.ID)
 }
 
-func (p *productRepository) Update(ctx context.Context, id int, pu *model.ProductUpdate) (*model.Product, error) {
+func (p *productRepository) Update(ctx context.Context, id int, pu *model.ProductUpdate) (*model.ProductWithCategory, error) {
 
 	setClauses := []string{}
 	args := []interface{}{}
@@ -189,25 +191,29 @@ func (p *productRepository) Update(ctx context.Context, id int, pu *model.Produc
 		return nil, pgx.ErrNoRows
 	}
 
-	var product model.Product
+	var product model.ProductWithCategory
 	err = p.db.QueryRow(
 		ctx,
 		`SELECT
 			id,
 			cafe_id,
 			category_id,
+			category.name,
 			name,
 			description,
 			price,
 			created_at,
 			updated_at
 		FROM product
+		JOIN categories 
+		ON product.category_id = categories.id
 		WHERE id = $1`,
 		id,
 	).Scan(
 		&product.ID,
 		&product.CafeId,
 		&product.CategoryId,
+		&product.CategoryName,
 		&product.Name,
 		&product.Description,
 		&product.Price,

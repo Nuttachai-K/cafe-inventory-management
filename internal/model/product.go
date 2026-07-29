@@ -23,3 +23,8 @@ type ProductUpdate struct {
 	Description *string          `json:"description"`
 	Price       *decimal.Decimal `json:"price"`
 }
+
+type ProductWithCategory struct {
+	Product
+	CategoryName string `json:"category_name"`
+}
