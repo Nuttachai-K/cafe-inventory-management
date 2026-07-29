@@ -77,6 +77,8 @@ func (p *productRepository) GetAll(ctx context.Context, limit int) ([]model.Prod
 			created_at,
 			updated_at
 		FROM product
+		JOIN categories 
+		ON product.category_id = categories.id
 		WHERE 1=1
 		`
 
@@ -152,7 +154,7 @@ func (p *productRepository) Update(ctx context.Context, id int, pu *model.Produc
 	args := []interface{}{}
 	argPos := 2
 
-	addClauses := func(column string, value interface{}) {
+	addClauses := func(column string, value any) {
 		setClauses = append(setClauses, fmt.Sprintf("%s = $%d", column, argPos))
 		args = append(args, value)
 		argPos++
@@ -180,7 +182,7 @@ func (p *productRepository) Update(ctx context.Context, id int, pu *model.Produc
 		"UPDATE products SET %s WHERE id = $1",
 		strings.Join(setClauses, ", "),
 	)
-	args = append([]interface{}{id}, args...)
+	args = append([]any{id}, args...)
 
 	result, err := p.db.Exec(ctx, query, args...)
 	if err != nil {
