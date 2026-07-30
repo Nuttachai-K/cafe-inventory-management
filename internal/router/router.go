@@ -26,15 +26,15 @@ func NewRouter(cafeHandler *handler.CafeHandler, userHandler *handler.UserHandle
 
 	mux.HandleFunc("GET /api/v1/products", productHandler.GetAll)
 	mux.HandleFunc("GET /api/v1/products/{id}", productHandler.GetByID)
-	mux.HandleFunc("POST /api/v1/products", productHandler.Create)
-	mux.HandleFunc("PATCH /api/v1/products/{id}", productHandler.Update)
-	mux.HandleFunc("DELETE /api/v1/products/{id}", productHandler.Delete)
+	mux.HandleFunc("POST /api/v1/products", middleware.Authenticate(middleware.RequireRole(model.RoleAdmin)(productHandler.Create)))
+	mux.HandleFunc("PATCH /api/v1/products/{id}", middleware.Authenticate(middleware.RequireRole(model.RoleAdmin)(productHandler.Update)))
+	mux.HandleFunc("DELETE /api/v1/products/{id}", middleware.Authenticate(middleware.RequireRole(model.RoleAdmin)(productHandler.Delete)))
 
 	mux.HandleFunc("GET /api/v1/categories", categoryHandler.GetAll)
 	mux.HandleFunc("GET /api/v1/categories/{id}", categoryHandler.GetByID)
-	mux.HandleFunc("POST /api/v1/categories", categoryHandler.Create)
-	mux.HandleFunc("PATCH /api/v1/categories/{id}", categoryHandler.Update)
-	mux.HandleFunc("DELETE /api/v1/categories/{id}", categoryHandler.Delete)
+	mux.HandleFunc("POST /api/v1/categories", middleware.Authenticate(middleware.RequireRole(model.RoleAdmin)(categoryHandler.Create)))
+	mux.HandleFunc("PATCH /api/v1/categories/{id}", middleware.Authenticate(middleware.RequireRole(model.RoleAdmin)(categoryHandler.Update)))
+	mux.HandleFunc("DELETE /api/v1/categories/{id}", middleware.Authenticate(middleware.RequireRole(model.RoleAdmin)(categoryHandler.Delete)))
 
 	mux.HandleFunc("POST /api/v1/auth/login", authenHandler.Login)
 

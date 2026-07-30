@@ -90,7 +90,7 @@ func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
 		Message string `json:"message"`
 	}{
 		ID:      product.ID,
-		Message: "Category created successfully",
+		Message: "Product created successfully",
 	}); err != nil {
 		writeError(w, err)
 	}

@@ -72,12 +72,12 @@ func (s *productService) Update(ctx context.Context, id int, pu *model.ProductUp
 	}
 	if pu.CafeId != nil {
 		if *pu.CafeId < 0 {
-			return nil, fmt.Errorf("%w: user id must be positive", ErrInvalidInput)
+			return nil, fmt.Errorf("%w: cafe id must be positive", ErrInvalidInput)
 		}
 	}
 	if pu.CategoryId != nil {
 		if *pu.CategoryId < 0 {
-			return nil, fmt.Errorf("%w: user id must be positive", ErrInvalidInput)
+			return nil, fmt.Errorf("%w: category id must be positive", ErrInvalidInput)
 		}
 	}
 	if pu.Price != nil {

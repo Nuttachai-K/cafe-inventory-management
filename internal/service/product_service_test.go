@@ -60,12 +60,10 @@ func TestProductService_GetById(t *testing.T) {
 			id:   1,
 			getByIDFn: func(ctx context.Context, id int) (*model.ProductWithCategory, error) {
 				return &model.ProductWithCategory{
-					Product: model.Product{
-						ID:     1,
-						CafeId: 2,
-						Name:   "Latte",
-						Price:  decimal.NewFromFloat(3.50),
-					},
+					ID:           1,
+					CafeId:       2,
+					Name:         "Latte",
+					Price:        decimal.NewFromFloat(3.50),
 					CategoryName: "Beverages",
 				}, nil
 			},
@@ -171,9 +169,9 @@ func TestProductService_Update_PartialFields(t *testing.T) {
 
 	repo := &mockProductRepo{
 		updateFn: func(ctx context.Context, id int, pu *model.ProductUpdate) (*model.ProductWithCategory, error) {
-			return &model.ProductWithCategory{Product: model.Product{
+			return &model.ProductWithCategory{
 				ID: id,
-			}}, nil
+			}, nil
 		},
 	}
 	s := NewProductService(repo)

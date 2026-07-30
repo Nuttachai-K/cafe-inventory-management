@@ -135,7 +135,7 @@ func (p *productRepository) Create(ctx context.Context, product *model.Product) 
 			category_id,
 			name,
 			description,
-			price,
+			price
 		)
 		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id
@@ -160,26 +160,26 @@ func (p *productRepository) Update(ctx context.Context, id int, pu *model.Produc
 		argPos++
 	}
 	if pu.CafeId != nil {
-		addClauses("name", *pu.CafeId)
+		addClauses("cafe_id", *pu.CafeId)
 	}
 	if pu.CategoryId != nil {
-		addClauses("address", *pu.CategoryId)
+		addClauses("category_id", *pu.CategoryId)
 	}
 	if pu.Name != nil {
-		addClauses("latitude", *pu.Name)
+		addClauses("name", *pu.Name)
 	}
 	if pu.Description != nil {
-		addClauses("longitude", *pu.Description)
+		addClauses("description", *pu.Description)
 	}
 	if pu.Price != nil {
-		addClauses("nearest_station", *pu.Price)
+		addClauses("price", *pu.Price)
 	}
 	if len(setClauses) == 0 {
 		return nil, errors.New("no fields to update")
 	}
 
 	query := fmt.Sprintf(
-		"UPDATE products SET %s WHERE id = $1",
+		"UPDATE products SET %s WHERE products.id = $1",
 		strings.Join(setClauses, ", "),
 	)
 	args = append([]any{id}, args...)
@@ -197,19 +197,19 @@ func (p *productRepository) Update(ctx context.Context, id int, pu *model.Produc
 	err = p.db.QueryRow(
 		ctx,
 		`SELECT
-			id,
-			cafe_id,
-			category_id,
-			category.name,
-			name,
-			description,
-			price,
-			created_at,
-			updated_at
+			products.id,
+			products.cafe_id,
+			products.category_id,
+			categories.name,
+			products.name,
+			products.description,
+			products.price,
+			products.created_at,
+			products.updated_at
 		FROM products
 		JOIN categories 
-		ON product.category_id = categories.id
-		WHERE id = $1`,
+		ON products.category_id = categories.id
+		WHERE products.id = $1`,
 		id,
 	).Scan(
 		&product.ID,

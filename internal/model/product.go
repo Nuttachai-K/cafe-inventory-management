@@ -25,6 +25,13 @@ type ProductUpdate struct {
 }
 
 type ProductWithCategory struct {
-	Product
-	CategoryName string `json:"category_name"`
+	ID           int             `json:"id"`
+	CafeId       int             `json:"cafe_id"`
+	CategoryId   int             `json:"category_id"`
+	CategoryName string          `json:"category_name"`
+	Name         string          `json:"name"`
+	Description  string          `json:"description"`
+	Price        decimal.Decimal `json:"price"`
+	CreatedAt    time.Time       `json:"created_at"`
+	UpdatedAt    time.Time       `json:"updated_at"`
 }
