@@ -8,7 +8,7 @@ import (
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
 )
 
-func NewRouter(cafeHandler *handler.CafeHandler, userHandler *handler.UserHandler, authenHandler *handler.AuthHandler, productHandler *handler.ProductHandler) *http.ServeMux {
+func NewRouter(cafeHandler *handler.CafeHandler, userHandler *handler.UserHandler, authenHandler *handler.AuthHandler, productHandler *handler.ProductHandler, categoryHandler *handler.CategoryHandler) *http.ServeMux {
 
 	mux := http.NewServeMux()
 
@@ -25,6 +25,12 @@ func NewRouter(cafeHandler *handler.CafeHandler, userHandler *handler.UserHandle
 	mux.HandleFunc("DELETE /api/v1/users/{id}", middleware.Authenticate(middleware.RequireRole(model.RoleAdmin)(userHandler.Delete)))
 
 	mux.HandleFunc("GET /api/v1/products/{id}", productHandler.GetByID)
+
+	mux.HandleFunc("GET /api/v1/categories", categoryHandler.GetAll)
+	mux.HandleFunc("GET /api/v1/categories/{id}", categoryHandler.GetByID)
+	mux.HandleFunc("POST /api/v1/categories", categoryHandler.Create)
+	mux.HandleFunc("PATCH /api/v1/categories/{id}", categoryHandler.Update)
+	mux.HandleFunc("DELETE /api/v1/categories/{id}", categoryHandler.Delete)
 
 	mux.HandleFunc("POST /api/v1/auth/login", authenHandler.Login)
 

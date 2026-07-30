@@ -44,11 +44,15 @@ func main() {
 	authService := service.NewAuthService(userRepo)
 	authHandler := handler.NewAuthHandler(authService)
 
+	categoryRepo := repository.NewCategoryRepository(db)
+	categoryService := service.NewCategoryService(categoryRepo)
+	categoryHandler := handler.NewCategoryHandler(categoryService)
+
 	productRepo := repository.NewProductRepository(db)
 	productService := service.NewProductService(productRepo)
-	productHandler := handler.NewProducthandler(productService)
+	productHandler := handler.NewProductHandler(productService)
 
-	mux := router.NewRouter(cafeHandler, userHandler, authHandler, productHandler)
+	mux := router.NewRouter(cafeHandler, userHandler, authHandler, productHandler, categoryHandler)
 
 	http.ListenAndServe(":8080", mux)
 }
