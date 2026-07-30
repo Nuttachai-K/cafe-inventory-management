@@ -12,3 +12,11 @@ CREATE TRIGGER update_users_updated_at
 BEFORE UPDATE ON users
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
+
+INSERT INTO users(username, email, password_hash, user_role)
+VALUES (
+    'admin',
+    'admin@cafe.local',
+    '$2a$10$1xFOSNaYaOiqfT9KXAEHped.W8TRWlr6sU6tfIdKDGglbbcm/q9zq',
+    'ADMIN'
+);

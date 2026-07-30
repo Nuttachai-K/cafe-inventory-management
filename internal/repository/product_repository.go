@@ -43,7 +43,7 @@ func (p *productRepository) GetByID(ctx context.Context, id int) (*model.Product
 			price,
 			created_at,
 			updated_at
-		FROM product
+		FROM products
 		WHERE id = $1`,
 		id,
 	).Scan(
@@ -76,7 +76,7 @@ func (p *productRepository) GetAll(ctx context.Context, limit int) ([]model.Prod
 			price,
 			created_at,
 			updated_at
-		FROM product
+		FROM products
 		JOIN categories 
 		ON product.category_id = categories.id
 		WHERE 1=1
@@ -130,7 +130,7 @@ func (p *productRepository) Create(ctx context.Context, product *model.Product) 
 
 	return p.db.QueryRow(
 		ctx,
-		`INSERT INTO cafes(
+		`INSERT INTO products(
 			cafe_id,
 			category_id,
 			name,
@@ -206,7 +206,7 @@ func (p *productRepository) Update(ctx context.Context, id int, pu *model.Produc
 			price,
 			created_at,
 			updated_at
-		FROM product
+		FROM products
 		JOIN categories 
 		ON product.category_id = categories.id
 		WHERE id = $1`,
