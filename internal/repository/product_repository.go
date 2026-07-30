@@ -67,18 +67,18 @@ func (p *productRepository) GetAll(ctx context.Context, limit int) ([]model.Prod
 
 	query := `
 		SELECT
-			id,
-			cafe_id,
-			category_id,
-			category.name,
-			name,
-			description,
-			price,
-			created_at,
-			updated_at
+			products.id,
+			products.cafe_id,
+			products.category_id,
+			categories.name,
+			products.name,
+			products.description,
+			products.price,
+			products.created_at,
+			products.updated_at
 		FROM products
 		JOIN categories 
-		ON product.category_id = categories.id
+		ON products.category_id = categories.id
 		WHERE 1=1
 		`
 

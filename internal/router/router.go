@@ -24,7 +24,11 @@ func NewRouter(cafeHandler *handler.CafeHandler, userHandler *handler.UserHandle
 	mux.HandleFunc("PATCH /api/v1/users/{id}", middleware.Authenticate(middleware.RequireRole(model.RoleAdmin)(userHandler.Update)))
 	mux.HandleFunc("DELETE /api/v1/users/{id}", middleware.Authenticate(middleware.RequireRole(model.RoleAdmin)(userHandler.Delete)))
 
+	mux.HandleFunc("GET /api/v1/products", productHandler.GetAll)
 	mux.HandleFunc("GET /api/v1/products/{id}", productHandler.GetByID)
+	mux.HandleFunc("POST /api/v1/products", productHandler.Create)
+	mux.HandleFunc("PATCH /api/v1/products/{id}", productHandler.Update)
+	mux.HandleFunc("DELETE /api/v1/products/{id}", productHandler.Delete)
 
 	mux.HandleFunc("GET /api/v1/categories", categoryHandler.GetAll)
 	mux.HandleFunc("GET /api/v1/categories/{id}", categoryHandler.GetByID)

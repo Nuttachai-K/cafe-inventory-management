@@ -2,10 +2,12 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/repository"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type CategoryService interface {
@@ -52,7 +54,15 @@ func (s *categoryService) GetAll(ctx context.Context, limit int) ([]model.Catego
 
 func (s *categoryService) Create(ctx context.Context, category *model.Category) error {
 
-	return s.repo.Create(ctx, category)
+	err := s.repo.Create(ctx, category)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return fmt.Errorf("%w: %s", ErrDuplicateCategory, category.Name)
+		}
+		return fmt.Errorf("%w: category", translateErr(err))
+	}
+	return nil
 }
 
 func (s *categoryService) Update(ctx context.Context, id int, name string) (*model.Category, error) {
