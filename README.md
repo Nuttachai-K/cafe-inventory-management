@@ -1,3 +1,5 @@
+[English](README.md) | [日本語](README.ja.md)
+
 # Cafe Inventory Management API
 
 A production-style RESTful backend API built with **Go** (`net/http`) and **PostgreSQL** for managing a **multi-branch cafe chain**.
@@ -38,10 +40,17 @@ This API addresses those challenges by providing centralized management, role-ba
 
 ## Product Management
 
-- Create products
+- Create products (linked to a cafe and a category)
 - Update product information
 - Delete products
-- Retrieve product catalog
+- Retrieve product catalog, including category name
+
+## Category Management
+
+- Create categories
+- Update category names
+- Delete categories
+- Retrieve category list and details
 
 ## Inventory Management
 
@@ -59,13 +68,14 @@ This API addresses those challenges by providing centralized management, role-ba
 
 ## Location Services
 
-- Store cafe coordinates
-- Calculate distance between users and cafes (Haversine Formula)
-- Search nearby cafes
-- Filter, sort, and paginate search results
+- Store cafe coordinates (latitude/longitude)
+- Search cafes by nearest station
+- Limit result count
 
 ## Future Features
 
+- Inventory tracking (stock levels, movement history, audit trail)
+- Distance-based cafe search (Haversine formula)
 - Customer-facing cafe search
 - Product availability search
 - Google Maps API integration
@@ -96,11 +106,10 @@ This API addresses those challenges by providing centralized management, role-ba
 
 ```text
 cmd/
-└── api/
+└── server/
     └── main.go
 
 internal/
-├── config/
 ├── database/
 ├── handler/
 ├── middleware/
@@ -111,7 +120,6 @@ internal/
 └── utils/
 
 migrations/
-docs/
 
 docker-compose.yml
 go.mod
@@ -208,11 +216,24 @@ inventory_logs
 
 ---
 
+## Categories
+
+| Method | Endpoint |
+|---------|----------|
+| GET | /api/v1/categories |
+| GET | /api/v1/categories/{id} |
+| POST | /api/v1/categories |
+| PATCH | /api/v1/categories/{id} |
+| DELETE | /api/v1/categories/{id} |
+
+---
+
+
 ## Products
 
 | Method | Endpoint |
 |---------|----------|
-| GET | /api/v1/cafes/{cafeId}/products |
+| GET | /api/v1/products |
 | GET | /api/v1/products/{id} |
 | POST | /api/v1/products |
 | PATCH | /api/v1/products/{id} |
@@ -259,18 +280,14 @@ Authorization: Bearer <JWT Token>
 ## Admin
 
 - Manage cafes
+- Manage categories
 - Manage products
 - Manage users
-- Update inventory
-- View inventory logs
 
 ## Staff
 
-- View cafes
-- View products
-- View inventory
-- Update inventory
-- View inventory logs
+- Can log in and view public endpoints (cafes, products, categories)
+- No distinct staff-only permissions are enforced yet — all create/update/delete endpoints currently require the Admin role
 
 ---
 
@@ -323,7 +340,6 @@ This project demonstrates knowledge of:
 - Product Image Upload
 - Redis Caching
 - Headquarters Dashboard
-- Branch Performance Analytics
 
 ---
 
