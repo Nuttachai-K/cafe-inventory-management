@@ -6,6 +6,7 @@ import (
 
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/repository"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type ProductService interface {
@@ -18,11 +19,13 @@ type ProductService interface {
 
 type productService struct {
 	repo repository.ProductRepository
+	pool *pgxpool.Pool
 }
 
-func NewProductService(repo repository.ProductRepository) ProductService {
+func NewProductService(repo repository.ProductRepository, pool *pgxpool.Pool) ProductService {
 	return &productService{
 		repo: repo,
+		pool: pool,
 	}
 }
 
@@ -62,7 +65,25 @@ func (s *productService) Create(ctx context.Context, product *model.Product) err
 		return fmt.Errorf("%w: price must be positive", ErrInvalidInput)
 	}
 
-	return s.repo.Create(ctx, product)
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	productRepoTx := repository.NewProductRepository(tx)
+	inventoryRepoTx := repository.NewInventoryRepository(tx)
+
+	if err := productRepoTx.Create(ctx, product); err != nil {
+		return err
+	}
+
+	inventory := &model.Inventory{ProductId: product.ID, StockQuantity: 0}
+	if err := inventoryRepoTx.Create(ctx, inventory); err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
 }
 
 func (s *productService) Update(ctx context.Context, id int, pu *model.ProductUpdate) (*model.ProductWithCategory, error) {

@@ -49,7 +49,7 @@ func main() {
 	categoryHandler := handler.NewCategoryHandler(categoryService)
 
 	productRepo := repository.NewProductRepository(db)
-	productService := service.NewProductService(productRepo)
+	productService := service.NewProductService(productRepo, db)
 	productHandler := handler.NewProductHandler(productService)
 
 	mux := router.NewRouter(cafeHandler, userHandler, authHandler, productHandler, categoryHandler)
