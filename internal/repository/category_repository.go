@@ -82,7 +82,7 @@ func (c *categoryRepository) GetAll(
 	}
 	defer rows.Close()
 
-	var categories []model.Category
+	categories := []model.Category{}
 
 	for rows.Next() {
 		var category model.Category

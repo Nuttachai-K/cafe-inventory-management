@@ -115,7 +115,7 @@ func (u *userRepository) GetAll(ctx context.Context, limit int) ([]model.User, e
 	}
 	defer rows.Close()
 
-	var users []model.User
+	users := []model.User{}
 
 	for rows.Next() {
 		var user model.User
