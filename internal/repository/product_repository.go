@@ -96,7 +96,7 @@ func (p *productRepository) GetAll(ctx context.Context, limit int) ([]model.Prod
 	}
 	defer rows.Close()
 
-	var products []model.ProductWithCategory
+	products := []model.ProductWithCategory{}
 
 	for rows.Next() {
 		var product model.ProductWithCategory

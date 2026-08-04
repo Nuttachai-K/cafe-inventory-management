@@ -4,11 +4,12 @@ import (
 	"context"
 
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
+	"github.com/jackc/pgx/v5"
 )
 
 type InventoryRepository interface {
 	Create(ctx context.Context, inventory *model.Inventory) error
-	// Delete(ctx context.Context, id int) error
+	Delete(ctx context.Context, id int) error
 }
 
 type inventoryRepository struct {
@@ -35,4 +36,21 @@ func (i *inventoryRepository) Create(ctx context.Context, inventory *model.Inven
 		inventory.ProductId,
 		inventory.StockQuantity,
 	).Scan(&inventory.ID)
+}
+
+func (i *inventoryRepository) Delete(ctx context.Context, id int) error {
+
+	result, err := i.db.Exec(
+		ctx,
+		`DELETE FROM inventory
+		WHERE product_id = $1`,
+		id,
+	)
+	if err != nil {
+		return err
+	}
+	if result.RowsAffected() == 0 {
+		return pgx.ErrNoRows
+	}
+	return err
 }

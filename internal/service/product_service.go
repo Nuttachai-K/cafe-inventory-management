@@ -50,7 +50,12 @@ func (s *productService) GetAll(ctx context.Context, limit int) ([]model.Product
 	if limit > 100 {
 		limit = 100
 	}
-	return s.repo.GetAll(ctx, limit)
+
+	products, err := s.repo.GetAll(ctx, limit)
+	if err != nil {
+		return nil, fmt.Errorf("%w: products", translateErr(err))
+	}
+	return products, nil
 }
 
 func (s *productService) Create(ctx context.Context, product *model.Product) error {
@@ -120,8 +125,21 @@ func (s *productService) Delete(ctx context.Context, id int) error {
 		return fmt.Errorf("%w: id must be positive", ErrInvalidInput)
 	}
 
-	if err := s.repo.Delete(ctx, id); err != nil {
-		return fmt.Errorf("%w: user", translateErr(err))
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return err
 	}
-	return nil
+	defer tx.Rollback(ctx)
+
+	productRepoTx := repository.NewProductRepository(tx)
+	inventoryRepoTx := repository.NewInventoryRepository(tx)
+
+	if err := inventoryRepoTx.Delete(ctx, id); err != nil {
+		return translateErr(err)
+	}
+	if err := productRepoTx.Delete(ctx, id); err != nil {
+		return translateErr(err)
+	}
+
+	return tx.Commit(ctx)
 }
