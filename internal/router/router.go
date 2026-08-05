@@ -8,7 +8,8 @@ import (
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
 )
 
-func NewRouter(cafeHandler *handler.CafeHandler, userHandler *handler.UserHandler, authenHandler *handler.AuthHandler, productHandler *handler.ProductHandler, categoryHandler *handler.CategoryHandler) *http.ServeMux {
+func NewRouter(cafeHandler *handler.CafeHandler, userHandler *handler.UserHandler, authenHandler *handler.AuthHandler,
+	productHandler *handler.ProductHandler, categoryHandler *handler.CategoryHandler, inventoryHandler *handler.InventoryHandler) *http.ServeMux {
 
 	mux := http.NewServeMux()
 
@@ -35,6 +36,10 @@ func NewRouter(cafeHandler *handler.CafeHandler, userHandler *handler.UserHandle
 	mux.HandleFunc("POST /api/v1/categories", middleware.Authenticate(middleware.RequireRole(model.RoleAdmin)(categoryHandler.Create)))
 	mux.HandleFunc("PATCH /api/v1/categories/{id}", middleware.Authenticate(middleware.RequireRole(model.RoleAdmin)(categoryHandler.Update)))
 	mux.HandleFunc("DELETE /api/v1/categories/{id}", middleware.Authenticate(middleware.RequireRole(model.RoleAdmin)(categoryHandler.Delete)))
+
+	mux.HandleFunc("GET /api/v1/inventory/{id}", inventoryHandler.GetByID)
+	mux.HandleFunc("GET /api/v1/inventory", inventoryHandler.GetAll)
+	mux.HandleFunc("PATCH /api/v1/inventory/{id}", middleware.Authenticate(middleware.RequireRole(model.RoleAdmin)(inventoryHandler.UpdateStock)))
 
 	mux.HandleFunc("POST /api/v1/auth/login", authenHandler.Login)
 

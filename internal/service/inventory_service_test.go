@@ -13,7 +13,7 @@ type mockInventoryRepo struct {
 	getByIDFn func(ctx context.Context, id int) (*model.InventoryWithProduct, error)
 	getAllFn  func(ctx context.Context, productName string, limit int) ([]model.InventoryWithProduct, error)
 	createFn  func(ctx context.Context, inventory *model.Inventory) error
-	updateFn  func(ctx context.Context, id int, quantity int, isAdjust bool) (int, error)
+	updateFn  func(ctx context.Context, id int, quantity int, isAdjust bool) (int, int, error)
 	deleteFn  func(ctx context.Context, id int) error
 }
 
@@ -26,7 +26,7 @@ func (m *mockInventoryRepo) GetAll(ctx context.Context, productName string, limi
 func (m *mockInventoryRepo) Create(ctx context.Context, inventory *model.Inventory) error {
 	return m.createFn(ctx, inventory)
 }
-func (m *mockInventoryRepo) UpdateStock(ctx context.Context, id int, quantity int, isAdjust bool) (int, error) {
+func (m *mockInventoryRepo) UpdateStock(ctx context.Context, id int, quantity int, isAdjust bool) (int, int, error) {
 	return m.updateFn(ctx, id, quantity, isAdjust)
 }
 func (m *mockInventoryRepo) Delete(ctx context.Context, id int) error {

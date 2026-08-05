@@ -36,7 +36,7 @@ func (s *inventoryService) GetByID(ctx context.Context, id int) (*model.Inventor
 
 	inventory, err := s.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("%w: cafe", translateErr(err))
+		return nil, fmt.Errorf("%w: inventory", translateErr(err))
 	}
 	return inventory, nil
 }
@@ -86,10 +86,12 @@ func (s *inventoryService) UpdateStock(ctx context.Context, id int, log *model.I
 	inventoryRepoTx := repository.NewInventoryRepository(tx)
 	logRepoTx := repository.NewInventoryLogRepository(tx)
 
-	stockQuantity, err := inventoryRepoTx.UpdateStock(ctx, id, changeValue, isAdjust)
+	inventoryID, stockQuantity, err := inventoryRepoTx.UpdateStock(ctx, id, changeValue, isAdjust)
 	if err != nil {
 		return 0, translateErr(err)
 	}
+
+	log.InventoryId = inventoryID
 
 	if err = logRepoTx.Create(ctx, log); err != nil {
 		return 0, translateErr(err)

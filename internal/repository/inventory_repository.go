@@ -12,7 +12,7 @@ type InventoryRepository interface {
 	GetByID(ctx context.Context, id int) (*model.InventoryWithProduct, error)
 	GetAll(ctx context.Context, productName string, limit int) ([]model.InventoryWithProduct, error)
 	Create(ctx context.Context, inventory *model.Inventory) error
-	UpdateStock(ctx context.Context, id int, quantity int, isAdjust bool) (int, error)
+	UpdateStock(ctx context.Context, id int, quantity int, isAdjust bool) (int, int, error)
 	Delete(ctx context.Context, id int) error
 }
 
@@ -144,23 +144,23 @@ func (i *inventoryRepository) Create(ctx context.Context, inventory *model.Inven
 	).Scan(&inventory.ID)
 }
 
-func (i *inventoryRepository) UpdateStock(ctx context.Context, id int, changeValue int, isAdjust bool) (int, error) {
+func (i *inventoryRepository) UpdateStock(ctx context.Context, id int, changeValue int, isAdjust bool) (int, int, error) {
 
 	query := `UPDATE inventory SET stock_quantity = stock_quantity + $1
-		WHERE id = $2 AND stock_quantity + $1 >= 0
-		RETURNING stock_quantity`
+		WHERE product_id = $2 AND stock_quantity + $1 >= 0
+		RETURNING id, stock_quantity`
 	if isAdjust {
 		query = `UPDATE inventory SET stock_quantity = $1
-			WHERE id = $2
-			RETURNING stock_quantity`
+			WHERE product_id = $2
+			RETURNING id, stock_quantity`
 	}
 
-	var stockQuantity int
-	err := i.db.QueryRow(ctx, query, changeValue, id).Scan(&stockQuantity)
+	var inventoryID, stockQuantity int
+	err := i.db.QueryRow(ctx, query, changeValue, id).Scan(&inventoryID, &stockQuantity)
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
-	return stockQuantity, nil
+	return inventoryID, stockQuantity, nil
 
 }
 
