@@ -8,7 +8,7 @@ import (
 )
 
 type InventoryLogRepository interface {
-	GetAll(ctx context.Context, limit int) ([]model.InventoryLog, error)
+	GetAll(ctx context.Context, log *model.InventoryLogFilter, limit int) ([]model.InventoryLog, error)
 	Create(ctx context.Context, inventoryLog *model.InventoryLog) error
 }
 
@@ -23,7 +23,7 @@ func NewInventoryLogRepository(db DBTX) InventoryLogRepository {
 	}
 }
 
-func (il *inventoryLogRepository) GetAll(ctx context.Context, limit int) ([]model.InventoryLog, error) {
+func (il *inventoryLogRepository) GetAll(ctx context.Context, filters *model.InventoryLogFilter, limit int) ([]model.InventoryLog, error) {
 
 	query := `
 	SELECT
@@ -39,6 +39,36 @@ func (il *inventoryLogRepository) GetAll(ctx context.Context, limit int) ([]mode
 
 	args := []any{}
 	argID := 1
+
+	if filters.InventoryId != nil {
+		query += fmt.Sprintf(" AND inventory_id = $%d", argID)
+		args = append(args, *filters.InventoryId)
+		argID++
+	}
+
+	if filters.UserId != nil {
+		query += fmt.Sprintf(" AND user_id = $%d", argID)
+		args = append(args, *filters.UserId)
+		argID++
+	}
+
+	if filters.Operation != nil {
+		query += fmt.Sprintf(" AND operation = $%d", argID)
+		args = append(args, *filters.Operation)
+		argID++
+	}
+
+	if filters.From != nil {
+		query += fmt.Sprintf(" AND created_at >= $%d", argID)
+		args = append(args, *filters.From)
+		argID++
+	}
+
+	if filters.To != nil {
+		query += fmt.Sprintf(" AND created_at <= $%d", argID)
+		args = append(args, *filters.To)
+		argID++
+	}
 
 	if limit > 0 {
 		query += fmt.Sprintf(" LIMIT $%d", argID)

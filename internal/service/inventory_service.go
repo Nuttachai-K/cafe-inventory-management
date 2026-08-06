@@ -50,7 +50,12 @@ func (s *inventoryService) GetAll(ctx context.Context, productName string, limit
 		limit = 100
 	}
 
-	return s.repo.GetAll(ctx, productName, limit)
+	inventories, err := s.repo.GetAll(ctx, productName, limit)
+	if err != nil {
+		return nil, fmt.Errorf("%w: inventories", translateErr(err))
+	}
+
+	return inventories, nil
 }
 
 func (s *inventoryService) UpdateStock(ctx context.Context, id int, log *model.InventoryLog) (int, error) {
@@ -63,14 +68,20 @@ func (s *inventoryService) UpdateStock(ctx context.Context, id int, log *model.I
 		return 0, fmt.Errorf("%w: change quantity must be positive", ErrInvalidInput)
 	}
 
+	op, err := model.ParseOperation(log.Operation)
+	if err != nil {
+		return 0, fmt.Errorf("%w: %v", ErrInvalidInput, err)
+	}
+	log.Operation = string(op)
+
 	var changeValue int
 	isAdjust := false
-	switch log.Operation {
-	case "IN":
+	switch op {
+	case model.InOperation:
 		changeValue = log.ChangeQuantity
-	case "OUT":
+	case model.OutOperation:
 		changeValue = -log.ChangeQuantity
-	case "ADJUST":
+	case model.AdjustOperation:
 		changeValue = log.ChangeQuantity
 		isAdjust = true
 	default:

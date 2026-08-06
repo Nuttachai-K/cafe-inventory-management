@@ -83,10 +83,7 @@ func (h *InventoryHandler) UpdateStock(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req struct {
-		Operation      string `json:"operation"`
-		ChangeQuantity int    `json:"change_quantity"`
-	}
+	var req model.InventoryUpdateRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
@@ -110,6 +107,13 @@ func (h *InventoryHandler) UpdateStock(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]int{"stock_quantity": stockQuantity})
-
+	if err := json.NewEncoder(w).Encode(struct {
+		Message       string `json:"message"`
+		StockQuantity int    `json:"stock_quantity"`
+	}{
+		Message:       "Inventory updated successfully",
+		StockQuantity: stockQuantity,
+	}); err != nil {
+		writeError(w, err)
+	}
 }
