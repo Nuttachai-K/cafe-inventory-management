@@ -9,29 +9,35 @@ import (
 )
 
 type InventoryLogService interface {
-	GetLog(ctx context.Context, filters *model.InventoryLogFilter, limit int) ([]model.InventoryLog, error)
+	GetLog(ctx context.Context, filter *model.InventoryLogFilter, limit int) ([]model.InventoryLog, error)
 }
 
 type inventoryLogService struct {
 	repo repository.InventoryLogRepository
 }
 
-func (s *inventoryLogService) GetLog(ctx context.Context, filters *model.InventoryLogFilter, limit int) ([]model.InventoryLog, error) {
+func NewInventoryLogService(repo repository.InventoryLogRepository) InventoryLogService {
+	return &inventoryLogService{
+		repo: repo,
+	}
+}
 
-	if filters.InventoryId != nil && *filters.InventoryId < 0 {
+func (s *inventoryLogService) GetLog(ctx context.Context, filter *model.InventoryLogFilter, limit int) ([]model.InventoryLog, error) {
+
+	if filter.InventoryId != nil && *filter.InventoryId < 0 {
 		return nil, fmt.Errorf("%w: inventory id must be positive", ErrInvalidInput)
 	}
 
-	if filters.UserId != nil && *filters.UserId < 0 {
+	if filter.UserId != nil && *filter.UserId < 0 {
 		return nil, fmt.Errorf("%w: user id must be positive", ErrInvalidInput)
 	}
 
-	if filters.Operation != nil {
-		op, err := model.ParseOperation(*filters.Operation)
+	if filter.Operation != nil {
+		op, err := model.ParseOperation(*filter.Operation)
 		if err != nil {
 			return nil, fmt.Errorf("%w: %v", ErrInvalidInput, err)
 		}
-		*filters.Operation = string(op)
+		*filter.Operation = string(op)
 	}
 
 	if limit <= 0 {
@@ -41,11 +47,11 @@ func (s *inventoryLogService) GetLog(ctx context.Context, filters *model.Invento
 		limit = 100
 	}
 
-	if filters.From != nil && filters.To != nil && filters.From.After(*filters.To) {
+	if filter.From != nil && filter.To != nil && filter.From.After(*filter.To) {
 		return nil, fmt.Errorf("%w: from must be before to", ErrInvalidInput)
 	}
 
-	inventoryLogs, err := s.repo.GetAll(ctx, filters, limit)
+	inventoryLogs, err := s.repo.GetLog(ctx, filter, limit)
 	if err != nil {
 		return nil, fmt.Errorf("%w: logs", translateErr(err))
 	}

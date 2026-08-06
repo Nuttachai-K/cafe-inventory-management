@@ -9,7 +9,8 @@ import (
 )
 
 func NewRouter(cafeHandler *handler.CafeHandler, userHandler *handler.UserHandler, authenHandler *handler.AuthHandler,
-	productHandler *handler.ProductHandler, categoryHandler *handler.CategoryHandler, inventoryHandler *handler.InventoryHandler) *http.ServeMux {
+	productHandler *handler.ProductHandler, categoryHandler *handler.CategoryHandler, inventoryHandler *handler.InventoryHandler,
+	inventoryLogHandler *handler.InventoryLogHandler) *http.ServeMux {
 
 	mux := http.NewServeMux()
 
@@ -40,6 +41,8 @@ func NewRouter(cafeHandler *handler.CafeHandler, userHandler *handler.UserHandle
 	mux.HandleFunc("GET /api/v1/inventory/{id}", inventoryHandler.GetByID)
 	mux.HandleFunc("GET /api/v1/inventory", inventoryHandler.GetAll)
 	mux.HandleFunc("PATCH /api/v1/inventory/{id}", middleware.Authenticate(middleware.RequireRole(model.RoleAdmin)(inventoryHandler.UpdateStock)))
+
+	mux.HandleFunc("GET /api/v1/inventory/logs", middleware.Authenticate(middleware.RequireRole(model.RoleAdmin)(inventoryLogHandler.GetLogs)))
 
 	mux.HandleFunc("POST /api/v1/auth/login", authenHandler.Login)
 

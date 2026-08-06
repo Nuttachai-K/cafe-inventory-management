@@ -56,7 +56,11 @@ func main() {
 	inventoryService := service.NewInventoryService(inventoryRepo, db)
 	inventoryHandler := handler.NewInventoryHandler(inventoryService)
 
-	mux := router.NewRouter(cafeHandler, userHandler, authHandler, productHandler, categoryHandler, inventoryHandler)
+	inventoryLogRepo := repository.NewInventoryLogRepository(db)
+	inventoryLogService := service.NewInventoryLogService(inventoryLogRepo)
+	inventoryLogHandler := handler.NewInventoryLogHandler(inventoryLogService)
+
+	mux := router.NewRouter(cafeHandler, userHandler, authHandler, productHandler, categoryHandler, inventoryHandler, inventoryLogHandler)
 
 	http.ListenAndServe(":8080", mux)
 }

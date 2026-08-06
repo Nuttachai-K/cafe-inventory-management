@@ -33,18 +33,6 @@ func (m *mockInventoryRepo) Delete(ctx context.Context, id int) error {
 	return m.deleteFn(ctx, id)
 }
 
-type mockInventoryLogRepo struct {
-	getAllFn func(ctx context.Context, limit int) ([]model.InventoryLog, error)
-	createFn func(ctx context.Context, inventoryLog *model.InventoryLog) error
-}
-
-func (ml *mockInventoryLogRepo) GetAll(ctx context.Context, limit int) ([]model.InventoryLog, error) {
-	return ml.getAllFn(ctx, limit)
-}
-func (ml *mockInventoryLogRepo) Create(ctx context.Context, inventoryLog *model.InventoryLog) error {
-	return ml.createFn(ctx, inventoryLog)
-}
-
 func TestInventoryService_GetById(t *testing.T) {
 
 	tests := []struct {
