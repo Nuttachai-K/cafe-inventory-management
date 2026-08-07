@@ -49,10 +49,18 @@ func main() {
 	categoryHandler := handler.NewCategoryHandler(categoryService)
 
 	productRepo := repository.NewProductRepository(db)
-	productService := service.NewProductService(productRepo)
+	productService := service.NewProductService(productRepo, db)
 	productHandler := handler.NewProductHandler(productService)
 
-	mux := router.NewRouter(cafeHandler, userHandler, authHandler, productHandler, categoryHandler)
+	inventoryRepo := repository.NewInventoryRepository(db)
+	inventoryService := service.NewInventoryService(inventoryRepo, db)
+	inventoryHandler := handler.NewInventoryHandler(inventoryService)
+
+	inventoryLogRepo := repository.NewInventoryLogRepository(db)
+	inventoryLogService := service.NewInventoryLogService(inventoryLogRepo)
+	inventoryLogHandler := handler.NewInventoryLogHandler(inventoryLogService)
+
+	mux := router.NewRouter(cafeHandler, userHandler, authHandler, productHandler, categoryHandler, inventoryHandler, inventoryLogHandler)
 
 	http.ListenAndServe(":8080", mux)
 }

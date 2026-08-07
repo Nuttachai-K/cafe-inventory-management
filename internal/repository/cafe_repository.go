@@ -110,7 +110,7 @@ func (c *cafeRepository) GetAll(
 	}
 	defer rows.Close()
 
-	var cafes []model.Cafe
+	cafes := []model.Cafe{}
 
 	for rows.Next() {
 		var cafe model.Cafe

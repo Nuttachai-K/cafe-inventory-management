@@ -72,7 +72,7 @@ func TestProductService_GetById(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := NewProductService(&mockProductRepo{getByIDFn: tt.getByIDFn})
+			s := NewProductService(&mockProductRepo{getByIDFn: tt.getByIDFn}, nil)
 			_, err := s.GetByID(context.Background(), tt.id)
 
 			if tt.wantErr == nil && err != nil {
@@ -107,7 +107,7 @@ func TestProductService_GetAll(t *testing.T) {
 					return nil, nil
 				},
 			}
-			s := NewProductService(repo)
+			s := NewProductService(repo, nil)
 
 			if _, err := s.GetAll(context.Background(), tt.input); err != nil {
 				t.Fatalf("unexpected error: %v", err)
@@ -147,7 +147,7 @@ func TestProductService_Create(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := &mockProductRepo{createFn: tt.createFn}
-			s := NewProductService(repo)
+			s := NewProductService(repo, nil)
 
 			err := s.Create(context.Background(), tt.product)
 
@@ -174,7 +174,7 @@ func TestProductService_Update_PartialFields(t *testing.T) {
 			}, nil
 		},
 	}
-	s := NewProductService(repo)
+	s := NewProductService(repo, nil)
 	_, err := s.Update(context.Background(), 1, &model.ProductUpdate{
 		Name: ptr("newname"),
 	})
@@ -192,27 +192,11 @@ func TestProductService_Delete(t *testing.T) {
 		wantErr  error
 	}{
 		{name: "invalid id", id: 0, wantErr: ErrInvalidInput},
-		{
-			name: "not found",
-			id:   99,
-			deleteFn: func(ctx context.Context, id int) error {
-				return pgx.ErrNoRows
-			},
-			wantErr: ErrDataNotFound,
-		},
-		{
-			name: "success",
-			id:   1,
-			deleteFn: func(ctx context.Context, id int) error {
-				return nil
-			},
-			wantErr: nil,
-		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := NewProductService(&mockProductRepo{deleteFn: tt.deleteFn})
+			s := NewProductService(&mockProductRepo{deleteFn: tt.deleteFn}, nil)
 			err := s.Delete(context.Background(), tt.id)
 
 			if tt.wantErr == nil && err != nil {

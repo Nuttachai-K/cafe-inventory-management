@@ -8,22 +8,22 @@ import (
 
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type ProductRepository interface {
 	GetByID(ctx context.Context, id int) (*model.ProductWithCategory, error)
 	GetAll(ctx context.Context, limit int) ([]model.ProductWithCategory, error)
+
 	Create(ctx context.Context, product *model.Product) error
 	Update(ctx context.Context, id int, pu *model.ProductUpdate) (*model.ProductWithCategory, error)
 	Delete(ctx context.Context, id int) error
 }
 
 type productRepository struct {
-	db *pgxpool.Pool
+	db DBTX
 }
 
-func NewProductRepository(db *pgxpool.Pool) ProductRepository {
+func NewProductRepository(db DBTX) ProductRepository {
 	return &productRepository{
 		db: db,
 	}
@@ -96,7 +96,7 @@ func (p *productRepository) GetAll(ctx context.Context, limit int) ([]model.Prod
 	}
 	defer rows.Close()
 
-	var products []model.ProductWithCategory
+	products := []model.ProductWithCategory{}
 
 	for rows.Next() {
 		var product model.ProductWithCategory

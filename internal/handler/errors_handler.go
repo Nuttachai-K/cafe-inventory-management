@@ -25,6 +25,9 @@ func writeError(w http.ResponseWriter, err error) {
 	case errors.Is(err, service.ErrInvalidCredentials):
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 
+	case errors.Is(err, service.ErrInsufficientStock):
+		http.Error(w, err.Error(), http.StatusConflict)
+
 	default:
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
