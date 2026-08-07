@@ -104,6 +104,7 @@ func (h *InventoryHandler) UpdateStock(w http.ResponseWriter, r *http.Request) {
 	stockQuantity, err := h.service.UpdateStock(r.Context(), productId, log)
 	if err != nil {
 		writeError(w, err)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")

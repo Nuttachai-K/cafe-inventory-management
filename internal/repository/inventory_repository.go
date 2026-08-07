@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
@@ -19,6 +20,8 @@ type InventoryRepository interface {
 type inventoryRepository struct {
 	db DBTX
 }
+
+var ErrInsufficientStock = errors.New("insufficient stock")
 
 func NewInventoryRepository(db DBTX) InventoryRepository {
 	return &inventoryRepository{
@@ -146,22 +149,24 @@ func (i *inventoryRepository) Create(ctx context.Context, inventory *model.Inven
 
 func (i *inventoryRepository) UpdateStock(ctx context.Context, id int, changeValue int, isAdjust bool) (int, int, error) {
 
-	query := `UPDATE inventory SET stock_quantity = stock_quantity + $1
-		WHERE product_id = $2 AND stock_quantity + $1 >= 0
-		RETURNING id, stock_quantity`
-	if isAdjust {
-		query = `UPDATE inventory SET stock_quantity = $1
-			WHERE product_id = $2
-			RETURNING id, stock_quantity`
-	}
-
-	var inventoryID, stockQuantity int
-	err := i.db.QueryRow(ctx, query, changeValue, id).Scan(&inventoryID, &stockQuantity)
+	var currentQty int
+	err := i.db.QueryRow(ctx, `SELECT stock_quantity FROM inventory WHERE product_id = $1 FOR UPDATE`, id).Scan(&currentQty)
 	if err != nil {
 		return 0, 0, err
 	}
-	return inventoryID, stockQuantity, nil
 
+	newQty := changeValue
+	if !isAdjust {
+		newQty = currentQty + changeValue
+		if newQty < 0 {
+			return 0, 0, ErrInsufficientStock
+		}
+	}
+
+	var inventoryID, stockQuantity int
+	err = i.db.QueryRow(ctx, `UPDATE inventory SET stock_quantity = $1 WHERE product_id = $2 RETURNING id, stock_quantity`, newQty, id).Scan(&inventoryID, &stockQuantity)
+
+	return inventoryID, stockQuantity, err
 }
 
 func (i *inventoryRepository) Delete(ctx context.Context, id int) error {
