@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 // User represent a user in the system
 type User struct {
@@ -37,4 +40,17 @@ func (r UserRole) Valid() bool {
 	default:
 		return false
 	}
+}
+
+func (u User) MarshalJSON() ([]byte, error) {
+	type Alias User
+	return json.Marshal(&struct {
+		*Alias
+		CreatedAt string `json:"created_at"`
+		UpdatedAt string `json:"updated_at"`
+	}{
+		Alias:     (*Alias)(&u),
+		CreatedAt: formatDateHourJST(u.CreatedAt),
+		UpdatedAt: formatDateHourJST(u.UpdatedAt),
+	})
 }
