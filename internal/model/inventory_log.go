@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -51,4 +52,15 @@ func ParseOperation(s string) (Operation, error) {
 		return "", fmt.Errorf("operation must be IN, OUT, or ADJUST: %q", s)
 	}
 	return o, nil
+}
+
+func (c InventoryLog) MarshalJSON() ([]byte, error) {
+	type Alias InventoryLog
+	return json.Marshal(&struct {
+		*Alias
+		CreatedAt string `json:"created_at"`
+	}{
+		Alias:     (*Alias)(&c),
+		CreatedAt: formatDateHourJST(c.CreatedAt),
+	})
 }

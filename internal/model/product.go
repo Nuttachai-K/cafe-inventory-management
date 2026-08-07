@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/shopspring/decimal"
@@ -34,4 +35,30 @@ type ProductWithCategory struct {
 	Price        decimal.Decimal `json:"price"`
 	CreatedAt    time.Time       `json:"created_at"`
 	UpdatedAt    time.Time       `json:"updated_at"`
+}
+
+func (p Product) MarshalJSON() ([]byte, error) {
+	type Alias Product
+	return json.Marshal(&struct {
+		*Alias
+		CreatedAt string `json:"created_at"`
+		UpdatedAt string `json:"updated_at"`
+	}{
+		Alias:     (*Alias)(&p),
+		CreatedAt: formatDateHourJST(p.CreatedAt),
+		UpdatedAt: formatDateHourJST(p.UpdatedAt),
+	})
+}
+
+func (p ProductWithCategory) MarshalJSON() ([]byte, error) {
+	type Alias ProductWithCategory
+	return json.Marshal(&struct {
+		*Alias
+		CreatedAt string `json:"created_at"`
+		UpdatedAt string `json:"updated_at"`
+	}{
+		Alias:     (*Alias)(&p),
+		CreatedAt: formatDateHourJST(p.CreatedAt),
+		UpdatedAt: formatDateHourJST(p.UpdatedAt),
+	})
 }

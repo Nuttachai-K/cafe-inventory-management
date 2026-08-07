@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 // Cafe represent a cafe in the system
 type Cafe struct {
@@ -24,4 +27,81 @@ type CafeUpdate struct {
 	NearestStation *string    `json:"nearest_station,omitempty"`
 	OpeningTime    *time.Time `json:"opening_time,omitempty"`
 	ClosingTime    *time.Time `json:"closing_time,omitempty"`
+}
+
+func (c Cafe) MarshalJSON() ([]byte, error) {
+	type Alias Cafe
+	return json.Marshal(&struct {
+		*Alias
+		OpeningTime string `json:"opening_time"`
+		ClosingTime string `json:"closing_time"`
+		CreatedAt   string `json:"created_at"`
+		UpdatedAt   string `json:"updated_at"`
+	}{
+		Alias:       (*Alias)(&c),
+		OpeningTime: formatHour(c.OpeningTime),
+		ClosingTime: formatHour(c.ClosingTime),
+		CreatedAt:   formatDateHourJST(c.CreatedAt),
+		UpdatedAt:   formatDateHourJST(c.UpdatedAt),
+	})
+}
+
+func (c *Cafe) UnmarshalJSON(data []byte) error {
+	type Alias Cafe
+	aux := &struct {
+		OpeningTime string `json:"opening_time"`
+		ClosingTime string `json:"closing_time"`
+		*Alias
+	}{
+		Alias: (*Alias)(c),
+	}
+	if err := json.Unmarshal(data, aux); err != nil {
+		return err
+	}
+
+	if aux.OpeningTime != "" {
+		t, err := parseClockTime(aux.OpeningTime)
+		if err != nil {
+			return err
+		}
+		c.OpeningTime = t
+	}
+	if aux.ClosingTime != "" {
+		t, err := parseClockTime(aux.ClosingTime)
+		if err != nil {
+			return err
+		}
+		c.ClosingTime = t
+	}
+	return nil
+}
+
+func (cu *CafeUpdate) UnmarshalJSON(data []byte) error {
+	type Alias CafeUpdate
+	aux := &struct {
+		OpeningTime string `json:"opening_time"`
+		ClosingTime string `json:"closing_time"`
+		*Alias
+	}{
+		Alias: (*Alias)(cu),
+	}
+	if err := json.Unmarshal(data, aux); err != nil {
+		return err
+	}
+
+	if aux.OpeningTime != "" {
+		t, err := parseClockTime(aux.OpeningTime)
+		if err != nil {
+			return err
+		}
+		cu.OpeningTime = &t
+	}
+	if aux.ClosingTime != "" {
+		t, err := parseClockTime(aux.ClosingTime)
+		if err != nil {
+			return err
+		}
+		cu.ClosingTime = &t
+	}
+	return nil
 }
