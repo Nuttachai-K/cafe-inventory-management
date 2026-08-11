@@ -39,6 +39,7 @@ func (u *userRepository) GetByID(ctx context.Context, id int) (*model.User, erro
 			username,
 			email,
 			user_role,
+			is_active,
 			created_at,
 			updated_at
 		FROM users
@@ -49,6 +50,7 @@ func (u *userRepository) GetByID(ctx context.Context, id int) (*model.User, erro
 		&user.Username,
 		&user.Email,
 		&user.UserRole,
+		&user.IsActive,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
@@ -68,6 +70,7 @@ func (u *userRepository) GetByEmail(ctx context.Context, email string) (*model.U
 		email, 
 		password_hash,
 		user_role,
+		is_active,
 		created_at,
 		updated_at
 		FROM users
@@ -79,6 +82,7 @@ func (u *userRepository) GetByEmail(ctx context.Context, email string) (*model.U
 		&user.Email,
 		&user.PasswordHash,
 		&user.UserRole,
+		&user.IsActive,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
@@ -95,6 +99,7 @@ func (u *userRepository) GetAll(ctx context.Context, limit int) ([]model.User, e
 		username,
 		email,
 		user_role,
+		is_active,
 		created_at,
 		updated_at
 	FROM users 
@@ -125,6 +130,7 @@ func (u *userRepository) GetAll(ctx context.Context, limit int) ([]model.User, e
 			&user.Username,
 			&user.Email,
 			&user.UserRole,
+			&user.IsActive,
 			&user.CreatedAt,
 			&user.UpdatedAt,
 		)
@@ -162,7 +168,7 @@ func (u *userRepository) Create(ctx context.Context, user *model.User) error {
 
 func (u *userRepository) Update(ctx context.Context, id int, uu *model.UserUpdate) (*model.User, error) {
 	setClauses := []string{}
-	args := []interface{}{}
+	args := []any{}
 	argPos := 2
 
 	addClauses := func(column string, value interface{}) {
@@ -182,6 +188,9 @@ func (u *userRepository) Update(ctx context.Context, id int, uu *model.UserUpdat
 	}
 	if uu.UserRole != nil {
 		addClauses("user_role", *uu.UserRole)
+	}
+	if uu.IsActive != nil {
+		addClauses("is_active", *uu.IsActive)
 	}
 	if len(setClauses) == 0 {
 		return nil, errors.New("no fields to update")
@@ -211,6 +220,7 @@ func (u *userRepository) Update(ctx context.Context, id int, uu *model.UserUpdat
 			email,
 			password_hash,
 			user_role,
+			is_active,
 			created_at,
 			updated_at
 		FROM users
@@ -222,6 +232,7 @@ func (u *userRepository) Update(ctx context.Context, id int, uu *model.UserUpdat
 		&user.Email,
 		&user.PasswordHash,
 		&user.UserRole,
+		&user.IsActive,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
