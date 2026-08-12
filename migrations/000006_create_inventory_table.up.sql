@@ -1,6 +1,6 @@
 CREATE TABLE inventory (
     id SERIAL PRIMARY KEY,
-    product_id INT REFERENCES products(id) NOT NULL UNIQUE,
+    product_id INT REFERENCES products(id) ON DELETE RESTRICT NOT NULL UNIQUE,
     stock_quantity INT NOT NULL CHECK (stock_quantity >= 0),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()

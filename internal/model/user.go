@@ -10,9 +10,10 @@ type User struct {
 	ID           int       `json:"id"`
 	Username     string    `json:"username"`
 	Email        string    `json:"email"`
-	Password     string    `json:"password"`
+	Password     string    `json:"password,omitempty"`
 	PasswordHash string    `json:"-"`
 	UserRole     UserRole  `json:"user_role"`
+	IsActive     bool      `json:"is_active"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
@@ -24,6 +25,7 @@ type UserUpdate struct {
 	Password     *string   `json:"password,omitempty"`
 	PasswordHash *string   `json:"password_hash,omitempty"`
 	UserRole     *UserRole `json:"user_role,omitempty"`
+	IsActive     *bool     `json:"is_active,omitempty"`
 }
 
 type UserRole string

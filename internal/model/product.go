@@ -14,6 +14,7 @@ type Product struct {
 	Name        string          `json:"name"`
 	Description string          `json:"description"`
 	Price       decimal.Decimal `json:"price"`
+	IsActive    bool            `json:"is_active"`
 	CreatedAt   time.Time       `json:"created_at"`
 	UpdatedAt   time.Time       `json:"updated_at"`
 }
@@ -23,6 +24,7 @@ type ProductUpdate struct {
 	Name        *string          `json:"name"`
 	Description *string          `json:"description"`
 	Price       *decimal.Decimal `json:"price"`
+	IsActive    *bool            `json:"is_active"`
 }
 
 type ProductWithCategory struct {
@@ -33,6 +35,7 @@ type ProductWithCategory struct {
 	Name         string          `json:"name"`
 	Description  string          `json:"description"`
 	Price        decimal.Decimal `json:"price"`
+	IsActive     bool            `json:"is_active"`
 	CreatedAt    time.Time       `json:"created_at"`
 	UpdatedAt    time.Time       `json:"updated_at"`
 }

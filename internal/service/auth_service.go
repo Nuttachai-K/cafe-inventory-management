@@ -33,5 +33,9 @@ func (s *authService) Login(ctx context.Context, auth *model.Authentication) (st
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(auth.Password)); err != nil {
 		return "", ErrInvalidCredentials
 	}
+
+	if !user.IsActive {
+		return "", ErrUserInactive
+	}
 	return utils.GenerateToken(user.ID, string(user.UserRole))
 }
