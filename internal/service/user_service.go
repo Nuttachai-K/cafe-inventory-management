@@ -129,7 +129,7 @@ func (s *userService) Delete(ctx context.Context, id int) error {
 	}
 
 	if err := s.repo.Delete(ctx, id); err != nil {
-		return fmt.Errorf("%w: user", translateErr(err))
+		return translateErr(err)
 	}
 	return nil
 }

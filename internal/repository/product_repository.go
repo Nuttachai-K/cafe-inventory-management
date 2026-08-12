@@ -41,6 +41,7 @@ func (p *productRepository) GetByID(ctx context.Context, id int) (*model.Product
 			name,
 			description,
 			price,
+			is_active,
 			created_at,
 			updated_at
 		FROM products
@@ -53,6 +54,7 @@ func (p *productRepository) GetByID(ctx context.Context, id int) (*model.Product
 		&product.Name,
 		&product.Description,
 		&product.Price,
+		&product.IsActive,
 		&product.CreatedAt,
 		&product.UpdatedAt,
 	)
@@ -74,6 +76,7 @@ func (p *productRepository) GetAll(ctx context.Context, limit int) ([]model.Prod
 			products.name,
 			products.description,
 			products.price,
+			is_active,
 			products.created_at,
 			products.updated_at
 		FROM products
@@ -109,6 +112,7 @@ func (p *productRepository) GetAll(ctx context.Context, limit int) ([]model.Prod
 			&product.Name,
 			&product.Description,
 			&product.Price,
+			&product.IsActive,
 			&product.CreatedAt,
 			&product.UpdatedAt,
 		)
@@ -174,6 +178,9 @@ func (p *productRepository) Update(ctx context.Context, id int, pu *model.Produc
 	if pu.Price != nil {
 		addClauses("price", *pu.Price)
 	}
+	if pu.IsActive != nil {
+		addClauses("is_active", *pu.IsActive)
+	}
 	if len(setClauses) == 0 {
 		return nil, errors.New("no fields to update")
 	}
@@ -204,6 +211,7 @@ func (p *productRepository) Update(ctx context.Context, id int, pu *model.Produc
 			products.name,
 			products.description,
 			products.price,
+			products.is_active,
 			products.created_at,
 			products.updated_at
 		FROM products
@@ -219,6 +227,7 @@ func (p *productRepository) Update(ctx context.Context, id int, pu *model.Produc
 		&product.Name,
 		&product.Description,
 		&product.Price,
+		&product.IsActive,
 		&product.CreatedAt,
 		&product.UpdatedAt,
 	)
