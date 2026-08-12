@@ -35,7 +35,7 @@ func (s *authService) Login(ctx context.Context, auth *model.Authentication) (st
 	}
 
 	if !user.IsActive {
-		return "", ErrInvalidCredentials
+		return "", ErrUserInactive
 	}
 	return utils.GenerateToken(user.ID, string(user.UserRole))
 }

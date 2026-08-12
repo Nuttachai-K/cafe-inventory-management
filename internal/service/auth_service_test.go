@@ -40,9 +40,21 @@ func TestAuthService(t *testing.T) {
 			},
 			GetByEmailFn: func(ctx context.Context, email string) (*model.User, error) {
 				hash, _ := bcrypt.GenerateFromPassword([]byte("correct"), bcrypt.DefaultCost)
-				return &model.User{ID: 1, PasswordHash: string(hash), UserRole: model.RoleStaff}, nil
+				return &model.User{ID: 1, PasswordHash: string(hash), UserRole: model.RoleStaff, IsActive: true}, nil
 			},
 			wantErr: ErrInvalidCredentials,
+		},
+		{
+			name: "user inactived",
+			auth: &model.Authentication{
+				Email:    "test@example.com",
+				Password: "correct",
+			},
+			GetByEmailFn: func(ctx context.Context, email string) (*model.User, error) {
+				hash, _ := bcrypt.GenerateFromPassword([]byte("correct"), bcrypt.DefaultCost)
+				return &model.User{ID: 1, PasswordHash: string(hash), UserRole: model.RoleStaff, IsActive: false}, nil
+			},
+			wantErr: ErrUserInactive,
 		},
 		{
 			name: "success",
@@ -52,7 +64,7 @@ func TestAuthService(t *testing.T) {
 			},
 			GetByEmailFn: func(ctx context.Context, email string) (*model.User, error) {
 				hash, _ := bcrypt.GenerateFromPassword([]byte("correct"), bcrypt.DefaultCost)
-				return &model.User{ID: 1, PasswordHash: string(hash), UserRole: model.RoleStaff}, nil
+				return &model.User{ID: 1, PasswordHash: string(hash), UserRole: model.RoleStaff, IsActive: true}, nil
 			},
 			wantErr: nil,
 		},

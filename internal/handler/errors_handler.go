@@ -31,6 +31,9 @@ func writeError(w http.ResponseWriter, err error) {
 	case errors.Is(err, service.ErrHasDependents):
 		http.Error(w, err.Error(), http.StatusConflict)
 
+	case errors.Is(err, service.ErrUserInactive):
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+
 	default:
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
