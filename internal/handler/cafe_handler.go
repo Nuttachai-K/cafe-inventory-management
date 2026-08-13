@@ -142,6 +142,7 @@ func (h *CafeHandler) Create(w http.ResponseWriter, r *http.Request) {
 // @Param cafe body model.CafeUpdate true "Cafe payload"
 // @Success 200 {object} model.Cafe
 // @Failure 400 {string} string "invalid request body or invalid cafe id"
+// @Failure 404 {string} string "data not found"
 // @Failure 500 {string} string "internal server error"
 // @Router /api/v1/cafes/{id} [patch]
 func (h *CafeHandler) Update(w http.ResponseWriter, r *http.Request) {

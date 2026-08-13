@@ -19,6 +19,17 @@ func NewProductHandler(service service.ProductService) *ProductHandler {
 	}
 }
 
+// GetProductByID godoc
+// @Summary Get a product by id
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param id path int true "Product ID"
+// @Success 200 {object} model.ProductWithCategory
+// @Failure 400 {string} string "invalid product id"
+// @Failure 404 {string} string "data not found"
+// @Failure 500 {string} string "internal server error"
+// @Router /api/v1/products/{id} [get]
 func (h *ProductHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
@@ -43,6 +54,16 @@ func (h *ProductHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetAllProduct godoc
+// @Summary Get all products
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param limit query int false "Max results to return (default 20)"
+// @Success 200 {array} model.ProductWithCategory
+// @Failure 400 {string} string "invalid limit"
+// @Failure 500 {string} string "internal server error"
+// @Router /api/v1/products [get]
 func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 
 	limit := 20
@@ -69,6 +90,17 @@ func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// CreateProduct godoc
+// @Summary Create a product
+// @Tags products
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param product body model.ProductCreate true "Product payload"
+// @Success 201 {object} object{id=int,message=string}
+// @Failure 400 {string} string "invalid request body"
+// @Failure 500 {string} string "internal server error"
+// @Router /api/v1/products [post]
 func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	var product model.Product
@@ -96,6 +128,20 @@ func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// UpdateProduct godoc
+// @Summary Update a product
+// @Tags products
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "Product ID"
+// @Param product body model.ProductUpdate true "Product payload"
+// @Success 200 {object} model.ProductWithCategory
+// @Failure 400 {string} string "invalid request body or invalid product id"
+// @Failure 404 {string} string "data not found"
+// @Failure 409 {string} string "referenced cafe_id or category_id does not exist"
+// @Failure 500 {string} string "internal server error"
+// @Router /api/v1/products/{id} [patch]
 func (h *ProductHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.PathValue("id"))
@@ -111,7 +157,7 @@ func (h *ProductHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := h.service.Update(r.Context(), id, &req)
+	product, err := h.service.Update(r.Context(), id, &req)
 	if err != nil {
 		writeError(w, err)
 		return
@@ -119,11 +165,24 @@ func (h *ProductHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(user); err != nil {
+	if err := json.NewEncoder(w).Encode(product); err != nil {
 		writeError(w, err)
 	}
 }
 
+// DeleteProduct godoc
+// @Summary Delete a product
+// @Tags products
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "Product ID"
+// @Success 204
+// @Failure 400 {string} string "invalid product id"
+// @Failure 404 {string} string "data not found"
+// @Failure 409 {string} string "product has dependent records"
+// @Failure 500 {string} string "internal server error"
+// @Router /api/v1/products/{id} [delete]
 func (h *ProductHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.PathValue("id"))

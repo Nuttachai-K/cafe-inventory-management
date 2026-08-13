@@ -75,6 +75,57 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.ProductCreate:
+    properties:
+      cafe_id:
+        type: integer
+      category_id:
+        type: integer
+      description:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+    type: object
+  model.ProductUpdate:
+    properties:
+      cafe_id:
+        type: integer
+      category_id:
+        type: integer
+      description:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      price:
+        type: number
+    type: object
+  model.ProductWithCategory:
+    properties:
+      cafe_id:
+        type: integer
+      category_id:
+        type: integer
+      category_name:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      name:
+        type: string
+      price:
+        type: number
+      updated_at:
+        type: string
+    type: object
   model.User:
     properties:
       created_at:
@@ -334,6 +385,10 @@ paths:
           description: invalid request body or invalid cafe id
           schema:
             type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
         "500":
           description: internal server error
           schema:
@@ -510,6 +565,10 @@ paths:
           description: invalid request body or invalid category id
           schema:
             type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
         "409":
           description: category name is already used
           schema:
@@ -523,6 +582,180 @@ paths:
       summary: Update a category
       tags:
       - categories
+  /api/v1/products:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Max results to return (default 20)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.ProductWithCategory'
+            type: array
+        "400":
+          description: invalid limit
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get all products
+      tags:
+      - products
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product payload
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/model.ProductCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            properties:
+              id:
+                type: integer
+              message:
+                type: string
+            type: object
+        "400":
+          description: invalid request body
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a product
+      tags:
+      - products
+  /api/v1/products/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: invalid product id
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "409":
+          description: product has dependent records
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a product
+      tags:
+      - products
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ProductWithCategory'
+        "400":
+          description: invalid product id
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get a product by id
+      tags:
+      - products
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Product payload
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/model.ProductUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ProductWithCategory'
+        "400":
+          description: invalid request body or invalid product id
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "409":
+          description: referenced cafe_id or category_id does not exist
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update a product
+      tags:
+      - products
   /api/v1/users:
     get:
       consumes:

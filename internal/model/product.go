@@ -18,6 +18,7 @@ type Product struct {
 	CreatedAt   time.Time       `json:"created_at"`
 	UpdatedAt   time.Time       `json:"updated_at"`
 }
+
 type ProductUpdate struct {
 	CafeId      *int             `json:"cafe_id"`
 	CategoryId  *int             `json:"category_id"`
@@ -38,6 +39,15 @@ type ProductWithCategory struct {
 	IsActive     bool            `json:"is_active"`
 	CreatedAt    time.Time       `json:"created_at"`
 	UpdatedAt    time.Time       `json:"updated_at"`
+}
+
+// For swagger documentation
+type ProductCreate struct {
+	CafeId      int             `json:"cafe_id"`
+	CategoryId  int             `json:"category_id"`
+	Name        string          `json:"name"`
+	Description string          `json:"description"`
+	Price       decimal.Decimal `json:"price"`
 }
 
 func (p Product) MarshalJSON() ([]byte, error) {

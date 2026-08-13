@@ -61,10 +61,10 @@ func (s *productService) GetAll(ctx context.Context, limit int) ([]model.Product
 func (s *productService) Create(ctx context.Context, product *model.Product) error {
 
 	if product.CafeId < 0 {
-		return fmt.Errorf("%w: user id must be positive", ErrInvalidInput)
+		return fmt.Errorf("%w: cafe id must be positive", ErrInvalidInput)
 	}
 	if product.CategoryId < 0 {
-		return fmt.Errorf("%w: user id must be positive", ErrInvalidInput)
+		return fmt.Errorf("%w: category id must be positive", ErrInvalidInput)
 	}
 	if product.Price.IsNegative() {
 		return fmt.Errorf("%w: price must be positive", ErrInvalidInput)
