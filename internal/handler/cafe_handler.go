@@ -19,7 +19,7 @@ func NewCafeHandler(service service.CafeService) *CafeHandler {
 	}
 }
 
-// GwtCafeByID godoc
+// GetCafeByID godoc
 // @Summary Get a cafe by id
 // @Tags cafes
 // @Accept json
@@ -99,7 +99,7 @@ func (h *CafeHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param cafe body model.Cafe true "Cafe payload"
+// @Param cafe body model.CafeCreate true "Cafe payload"
 // @Success 201 {object} object{id=int,message=string}
 // @Failure 400 {string} string "invalid request body"
 // @Failure 500 {string} string "internal server error"

@@ -30,6 +30,23 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.CafeCreate:
+    properties:
+      address:
+        type: string
+      closing_time:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      nearest_station:
+        type: string
+      opening_time:
+        type: string
+    type: object
   model.CafeUpdate:
     properties:
       address:
@@ -45,6 +62,17 @@ definitions:
       nearest_station:
         type: string
       opening_time:
+        type: string
+    type: object
+  model.Category:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
         type: string
     type: object
 host: localhost:8080
@@ -81,6 +109,10 @@ paths:
             type: string
         "401":
           description: invalid credential or inactive user
+          schema:
+            type: string
+        "500":
+          description: internal server error
           schema:
             type: string
       summary: Login
@@ -128,7 +160,7 @@ paths:
         name: cafe
         required: true
         schema:
-          $ref: '#/definitions/model.Cafe'
+          $ref: '#/definitions/model.CafeCreate'
       produces:
       - application/json
       responses:
@@ -143,6 +175,10 @@ paths:
             type: object
         "400":
           description: invalid request body
+          schema:
+            type: string
+        "500":
+          description: internal server error
           schema:
             type: string
       security:
@@ -240,7 +276,11 @@ paths:
           schema:
             $ref: '#/definitions/model.Cafe'
         "400":
-          description: invalid request body
+          description: invalid request body or invalid cafe id
+          schema:
+            type: string
+        "500":
+          description: internal server error
           schema:
             type: string
       security:
@@ -248,6 +288,183 @@ paths:
       summary: Update a cafe
       tags:
       - cafes
+  /api/v1/categories:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Max results to return (default 20)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Category'
+            type: array
+        "400":
+          description: invalid limit
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get all categories
+      tags:
+      - categories
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category payload
+        in: body
+        name: cafe
+        required: true
+        schema:
+          $ref: '#/definitions/model.Category'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            properties:
+              id:
+                type: integer
+              message:
+                type: string
+            type: object
+        "400":
+          description: invalid request body
+          schema:
+            type: string
+        "409":
+          description: category name is already used
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a category
+      tags:
+      - categories
+  /api/v1/categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: invalid id
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "409":
+          description: category has dependent records
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a category
+      tags:
+      - categories
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Category'
+        "400":
+          description: invalid category id
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get a category by id
+      tags:
+      - categories
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Cafe payload
+        in: body
+        name: cafe
+        required: true
+        schema:
+          $ref: '#/definitions/model.Category'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              name:
+                type: string
+            type: object
+        "400":
+          description: invalid request body or invalid category id
+          schema:
+            type: string
+        "409":
+          description: category name is already used
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update a category
+      tags:
+      - categories
 schemes:
 - http
 securityDefinitions:
