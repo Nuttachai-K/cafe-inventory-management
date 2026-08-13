@@ -20,6 +20,17 @@ func NewInventoryHandler(service service.InventoryService) *InventoryHandler {
 	}
 }
 
+// GetInventoryByID godoc
+// @Summary Get a inventory by id
+// @Tags inventory
+// @Accept json
+// @Produce json
+// @Param id path int true "Inventory ID"
+// @Success 200 {object} model.InventoryWithProduct
+// @Failure 400 {string} string "invalid inventory id"
+// @Failure 404 {string} string "data not found"
+// @Failure 500 {string} string "internal server error"
+// @Router /api/v1/inventory/{id} [get]
 func (h *InventoryHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 
 	idStr := r.PathValue("id")
@@ -45,6 +56,17 @@ func (h *InventoryHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetAllInventory godoc
+// @Summary Get all inventories
+// @Tags inventory
+// @Accept json
+// @Produce json
+// @Param name query string false "Product name"
+// @Param limit query int false "Max results to return (default 20)"
+// @Success 200 {array} model.InventoryWithProduct
+// @Failure 400 {string} string "invalid limit"
+// @Failure 500 {string} string "internal server error"
+// @Router /api/v1/inventory [get]
 func (h *InventoryHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 
 	productName := r.URL.Query().Get("name")
@@ -74,6 +96,22 @@ func (h *InventoryHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// UpdateStock godoc
+// @Summary Update a stock
+// @Tags inventory
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "Product ID"
+// @Param inventory body model.InventoryUpdateRequest true "Inventory payload"
+// @Success 200 {object} object{message=string, stock_quantity=int}
+// @Failure 400 {string} string "invalid request body or invalid product id"
+// @Failure 401 {string} string "invalid or expired token"
+// @Failure 403 {string} string "permission denied"
+// @Failure 404 {string} string "data not found"
+// @Failure 409 {string} string "insufficient stock"
+// @Failure 500 {string} string "internal server error"
+// @Router /api/v1/inventory/{id} [patch]
 func (h *InventoryHandler) UpdateStock(w http.ResponseWriter, r *http.Request) {
 
 	idStr := r.PathValue("id")
