@@ -75,6 +75,21 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.InventoryLog:
+    properties:
+      change_quantity:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: integer
+      inventory_id:
+        type: integer
+      operation:
+        type: string
+      user_id:
+        type: integer
+    type: object
   model.InventoryUpdateRequest:
     properties:
       change_quantity:
@@ -767,6 +782,65 @@ paths:
       summary: Update a stock
       tags:
       - inventory
+  /api/v1/inventory/logs:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Inventory id
+        in: query
+        name: inventory_id
+        type: string
+      - description: User id
+        in: query
+        name: user_id
+        type: string
+      - description: Operation
+        in: query
+        name: operation
+        type: string
+      - description: Starting time
+        in: query
+        name: from
+        type: string
+      - description: End time
+        in: query
+        name: to
+        type: string
+      - description: Max results to return (default 20)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.InventoryLog'
+            type: array
+        "400":
+          description: invalid query parameter or value
+          schema:
+            type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all logs
+      tags:
+      - log
   /api/v1/products:
     get:
       consumes:
