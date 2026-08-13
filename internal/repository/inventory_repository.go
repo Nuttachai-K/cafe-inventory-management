@@ -47,7 +47,7 @@ func (i *inventoryRepository) GetByID(ctx context.Context, id int) (*model.Inven
 		ON inventory.product_id = products.id
 		JOIN cafes 
 		ON products.cafe_id = cafes.id
-		WHERE inventory.product_id = $1;`,
+		WHERE inventory.product_id = $1`,
 		id,
 	).Scan(
 		&inventory.ID,
@@ -92,6 +92,8 @@ func (i *inventoryRepository) GetAll(ctx context.Context, productName string, li
 		args = append(args, "%"+productName+"%")
 		argID++
 	}
+
+	query += " ORDER BY inventory.id"
 
 	if limit > 0 {
 		query += fmt.Sprintf(" LIMIT $%d", argID)

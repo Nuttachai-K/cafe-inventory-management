@@ -109,6 +109,8 @@ func (u *userRepository) GetAll(ctx context.Context, limit int) ([]model.User, e
 	args := []any{}
 	argID := 1
 
+	query += " ORDER BY id"
+
 	if limit > 0 {
 		query += fmt.Sprintf(" LIMIT $%d", argID)
 		args = append(args, limit)
@@ -200,7 +202,7 @@ func (u *userRepository) Update(ctx context.Context, id int, uu *model.UserUpdat
 		"UPDATE users SET %s WHERE id = $1",
 		strings.Join(setClauses, ", "),
 	)
-	args = append([]interface{}{id}, args...)
+	args = append([]any{id}, args...)
 
 	result, err := u.db.Exec(ctx, query, args...)
 	if err != nil {

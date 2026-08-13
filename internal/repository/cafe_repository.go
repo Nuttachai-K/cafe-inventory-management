@@ -99,6 +99,8 @@ func (c *cafeRepository) GetAll(
 		argID++
 	}
 
+	query += " ORDER BY id"
+
 	if limit > 0 {
 		query += fmt.Sprintf(" LIMIT $%d", argID)
 		args = append(args, limit)
@@ -169,7 +171,7 @@ func (c *cafeRepository) Create(ctx context.Context, cafe *model.Cafe) error {
 func (c *cafeRepository) Update(ctx context.Context, id int, cu *model.CafeUpdate) (*model.Cafe, error) {
 
 	setClauses := []string{}
-	args := []interface{}{}
+	args := []any{}
 	argPos := 2
 
 	addClauses := func(column string, value interface{}) {
@@ -236,7 +238,8 @@ func (c *cafeRepository) Update(ctx context.Context, id int, cu *model.CafeUpdat
 			created_at,
 			updated_at
 		FROM cafes
-		WHERE id = $1`,
+		WHERE id = $1
+		ORDER BY id`,
 		id,
 	).Scan(
 		&cafe.ID,
