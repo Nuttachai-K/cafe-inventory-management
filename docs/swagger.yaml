@@ -1,0 +1,219 @@
+basePath: /
+definitions:
+  model.Cafe:
+    properties:
+      address:
+        type: string
+      closing_time:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      nearest_station:
+        type: string
+      opening_time:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.CafeUpdate:
+    properties:
+      address:
+        type: string
+      closing_time:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      nearest_station:
+        type: string
+      opening_time:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: REST API for multi-branch cafe chain inventory
+  title: Cafe Inventory Management API
+  version: "1.0"
+paths:
+  /api/v1/cafes:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Filter by nearest station
+        in: query
+        name: station
+        type: string
+      - description: Max results to return (default 20)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Cafe'
+            type: array
+        "400":
+          description: invalid limit
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get all cafes
+      tags:
+      - cafes
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Cafe payload
+        in: body
+        name: cafe
+        required: true
+        schema:
+          $ref: '#/definitions/model.Cafe'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            properties:
+              id:
+                type: integer
+              message:
+                type: string
+            type: object
+        "400":
+          description: invalid request body
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a cafe
+      tags:
+      - cafes
+  /api/v1/cafes/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Cafe ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: invalid id
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "409":
+          description: cafe has dependent records
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a cafe
+      tags:
+      - cafes
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Cafe ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Cafe'
+        "400":
+          description: invalid cafe id
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: get a cafe by id
+      tags:
+      - cafes
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Cafe ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Cafe payload
+        in: body
+        name: cafe
+        required: true
+        schema:
+          $ref: '#/definitions/model.CafeUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Cafe'
+        "400":
+          description: invalid request body
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update a cafe
+      tags:
+      - cafes
+schemes:
+- http
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

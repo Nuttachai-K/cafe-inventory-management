@@ -8,12 +8,22 @@ import (
 
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/database"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/handler"
+	"github.com/Nuttachai-K/cafe-inventory-management/internal/middleware"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/repository"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/router"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/service"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/utils"
 )
 
+// @title Cafe Inventory Management API
+// @version 1.0
+// @description REST API for multi-branch cafe chain inventory
+// @host localhost:8080
+// @BasePath /
+// @schemes http
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 	// Load enviorment data
 	err := godotenv.Load()
@@ -62,5 +72,5 @@ func main() {
 
 	mux := router.NewRouter(cafeHandler, userHandler, authHandler, productHandler, categoryHandler, inventoryHandler, inventoryLogHandler)
 
-	http.ListenAndServe(":8080", mux)
+	http.ListenAndServe(":8080", middleware.CorsMiddleware(mux))
 }
