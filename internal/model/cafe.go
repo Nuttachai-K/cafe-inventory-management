@@ -28,6 +28,7 @@ type CafeUpdate struct {
 	ClosingTime    *time.Time `json:"closing_time,omitempty"`
 }
 
+// For swagger documentation
 type CafeCreate struct {
 	Name           string    `json:"name"`
 	Address        string    `json:"address"`

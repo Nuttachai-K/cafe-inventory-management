@@ -75,6 +75,61 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      password:
+        type: string
+      updated_at:
+        type: string
+      user_role:
+        $ref: '#/definitions/model.UserRole'
+      username:
+        type: string
+    type: object
+  model.UserCreate:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      user_role:
+        $ref: '#/definitions/model.UserRole'
+      username:
+        type: string
+    type: object
+  model.UserRole:
+    enum:
+    - ADMIN
+    - STAFF
+    type: string
+    x-enum-varnames:
+    - RoleAdmin
+    - RoleStaff
+  model.UserUpdate:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      password:
+        type: string
+      password_hash:
+        type: string
+      user_role:
+        $ref: '#/definitions/model.UserRole'
+      username:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -117,7 +172,7 @@ paths:
             type: string
       summary: Login
       tags:
-      - Authentication
+      - auth
   /api/v1/cafes:
     get:
       consumes:
@@ -323,10 +378,13 @@ paths:
       parameters:
       - description: Category payload
         in: body
-        name: cafe
+        name: category
         required: true
         schema:
-          $ref: '#/definitions/model.Category'
+          properties:
+            name:
+              type: string
+          type: object
       produces:
       - application/json
       responses:
@@ -372,7 +430,7 @@ paths:
         "204":
           description: No Content
         "400":
-          description: invalid id
+          description: invalid category id
           schema:
             type: string
         "404":
@@ -432,22 +490,22 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Cafe payload
+      - description: Category payload
         in: body
-        name: cafe
+        name: category
         required: true
         schema:
-          $ref: '#/definitions/model.Category'
+          properties:
+            name:
+              type: string
+          type: object
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            properties:
-              name:
-                type: string
-            type: object
+            $ref: '#/definitions/model.Category'
         "400":
           description: invalid request body or invalid category id
           schema:
@@ -465,6 +523,184 @@ paths:
       summary: Update a category
       tags:
       - categories
+  /api/v1/users:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Max results to return (default 20)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.User'
+            type: array
+        "400":
+          description: invalid limit
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User payload
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            properties:
+              id:
+                type: integer
+              message:
+                type: string
+            type: object
+        "400":
+          description: invalid request body
+          schema:
+            type: string
+        "409":
+          description: email is already used
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a user
+      tags:
+      - users
+  /api/v1/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: invalid user id
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "409":
+          description: user has dependent records
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: invalid user id
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get a user by id
+      tags:
+      - users
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User payload
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: invalid request body or invalid user id
+          schema:
+            type: string
+        "409":
+          description: email is already used
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update a user
+      tags:
+      - users
 schemes:
 - http
 securityDefinitions:

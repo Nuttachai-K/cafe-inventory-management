@@ -20,7 +20,7 @@ func NewAuthHandler(service service.AuthService) *AuthHandler {
 
 // Login godoc
 // @Summary Login
-// @Tags Authentication
+// @Tags auth
 // @Accept json
 // @Produce json
 // @Param login body model.Authentication true "Login payload"

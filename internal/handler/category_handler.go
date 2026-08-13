@@ -95,7 +95,7 @@ func (h *CategoryHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param cafe body model.Category true "Category payload"
+// @Param category body object{name=string} true "Category payload"
 // @Success 201 {object} object{id=int,message=string}
 // @Failure 400 {string} string "invalid request body"
 // @Failure 409 {string} string "category name is already used"
@@ -134,8 +134,8 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Security BearerAuth
 // @Param id path int true "Category ID"
-// @Param cafe body model.Category true "Cafe payload"
-// @Success 200 {object} object{name=string}
+// @Param category body object{name=string} true "Category payload"
+// @Success 200 {object} model.Category
 // @Failure 400 {string} string "invalid request body or invalid category id"
 // @Failure 409 {string} string "category name is already used"
 // @Failure 500 {string} string "internal server error"
@@ -177,7 +177,7 @@ func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Param id path int true "Category ID"
 // @Success 204
-// @Failure 400 {string} string "invalid id"
+// @Failure 400 {string} string "invalid category id"
 // @Failure 404 {string} string "data not found"
 // @Failure 409 {string} string "category has dependent records"
 // @Failure 500 {string} string "internal server error"
