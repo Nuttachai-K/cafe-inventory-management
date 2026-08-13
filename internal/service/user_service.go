@@ -116,7 +116,7 @@ func (s *userService) Update(ctx context.Context, id int, uu *model.UserUpdate) 
 		var pgErr *pgconn.PgError
 		// Error from unique constraint in user email"
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			return nil, fmt.Errorf("%w: %s", ErrDuplicateEmail, user.Email)
+			return nil, fmt.Errorf("%w: %s", ErrDuplicateEmail, *uu.Email)
 		}
 		return nil, fmt.Errorf("%w: user", translateErr(err))
 	}
