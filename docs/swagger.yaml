@@ -75,6 +75,30 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.InventoryUpdateRequest:
+    properties:
+      change_quantity:
+        type: integer
+      operation:
+        type: string
+    type: object
+  model.InventoryWithProduct:
+    properties:
+      cafe_id:
+        type: integer
+      cafe_name:
+        type: string
+      id:
+        type: integer
+      product_id:
+        type: integer
+      product_name:
+        type: string
+      stock_quantity:
+        type: integer
+      updated_at:
+        type: string
+    type: object
   model.ProductCreate:
     properties:
       cafe_id:
@@ -283,6 +307,14 @@ paths:
           description: invalid request body
           schema:
             type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
+          schema:
+            type: string
         "500":
           description: internal server error
           schema:
@@ -309,6 +341,14 @@ paths:
           description: No Content
         "400":
           description: invalid id
+          schema:
+            type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
           schema:
             type: string
         "404":
@@ -385,6 +425,14 @@ paths:
           description: invalid request body or invalid cafe id
           schema:
             type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
+          schema:
+            type: string
         "404":
           description: data not found
           schema:
@@ -454,6 +502,14 @@ paths:
             type: object
         "400":
           description: invalid request body
+          schema:
+            type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
           schema:
             type: string
         "409":
@@ -565,6 +621,14 @@ paths:
           description: invalid request body or invalid category id
           schema:
             type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
+          schema:
+            type: string
         "404":
           description: data not found
           schema:
@@ -582,6 +646,127 @@ paths:
       summary: Update a category
       tags:
       - categories
+  /api/v1/inventory:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product name
+        in: query
+        name: name
+        type: string
+      - description: Max results to return (default 20)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.InventoryWithProduct'
+            type: array
+        "400":
+          description: invalid limit
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get all inventories
+      tags:
+      - inventory
+  /api/v1/inventory/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Inventory ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.InventoryWithProduct'
+        "400":
+          description: invalid inventory id
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get a inventory by id
+      tags:
+      - inventory
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Inventory payload
+        in: body
+        name: inventory
+        required: true
+        schema:
+          $ref: '#/definitions/model.InventoryUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              ' stock_quantity':
+                type: integer
+              message:
+                type: string
+            type: object
+        "400":
+          description: invalid request body or invalid product id
+          schema:
+            type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "409":
+          description: insufficient stock
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update a stock
+      tags:
+      - inventory
   /api/v1/products:
     get:
       consumes:
@@ -637,6 +822,14 @@ paths:
           description: invalid request body
           schema:
             type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
+          schema:
+            type: string
         "500":
           description: internal server error
           schema:
@@ -663,6 +856,14 @@ paths:
           description: No Content
         "400":
           description: invalid product id
+          schema:
+            type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
           schema:
             type: string
         "404":
@@ -737,6 +938,14 @@ paths:
             $ref: '#/definitions/model.ProductWithCategory'
         "400":
           description: invalid request body or invalid product id
+          schema:
+            type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
           schema:
             type: string
         "404":

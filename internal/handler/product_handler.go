@@ -99,6 +99,8 @@ func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 // @Param product body model.ProductCreate true "Product payload"
 // @Success 201 {object} object{id=int,message=string}
 // @Failure 400 {string} string "invalid request body"
+// @Failure 401 {string} string "invalid or expired token"
+// @Failure 403 {string} string "permission denied"
 // @Failure 500 {string} string "internal server error"
 // @Router /api/v1/products [post]
 func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -138,6 +140,8 @@ func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
 // @Param product body model.ProductUpdate true "Product payload"
 // @Success 200 {object} model.ProductWithCategory
 // @Failure 400 {string} string "invalid request body or invalid product id"
+// @Failure 401 {string} string "invalid or expired token"
+// @Failure 403 {string} string "permission denied"
 // @Failure 404 {string} string "data not found"
 // @Failure 409 {string} string "referenced cafe_id or category_id does not exist"
 // @Failure 500 {string} string "internal server error"
@@ -179,6 +183,8 @@ func (h *ProductHandler) Update(w http.ResponseWriter, r *http.Request) {
 // @Param id path int true "Product ID"
 // @Success 204
 // @Failure 400 {string} string "invalid product id"
+// @Failure 401 {string} string "invalid or expired token"
+// @Failure 403 {string} string "permission denied"
 // @Failure 404 {string} string "data not found"
 // @Failure 409 {string} string "product has dependent records"
 // @Failure 500 {string} string "internal server error"

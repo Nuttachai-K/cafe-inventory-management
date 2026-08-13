@@ -98,6 +98,8 @@ func (h *CategoryHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 // @Param category body object{name=string} true "Category payload"
 // @Success 201 {object} object{id=int,message=string}
 // @Failure 400 {string} string "invalid request body"
+// @Failure 401 {string} string "invalid or expired token"
+// @Failure 403 {string} string "permission denied"
 // @Failure 409 {string} string "category name is already used"
 // @Failure 500 {string} string "internal server error"
 // @Router /api/v1/categories [post]
@@ -137,6 +139,8 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 // @Param category body object{name=string} true "Category payload"
 // @Success 200 {object} model.Category
 // @Failure 400 {string} string "invalid request body or invalid category id"
+// @Failure 401 {string} string "invalid or expired token"
+// @Failure 403 {string} string "permission denied"
 // @Failure 404 {string} string "data not found"
 // @Failure 409 {string} string "category name is already used"
 // @Failure 500 {string} string "internal server error"

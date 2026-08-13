@@ -102,6 +102,8 @@ func (h *CafeHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 // @Param cafe body model.CafeCreate true "Cafe payload"
 // @Success 201 {object} object{id=int,message=string}
 // @Failure 400 {string} string "invalid request body"
+// @Failure 401 {string} string "invalid or expired token"
+// @Failure 403 {string} string "permission denied"
 // @Failure 500 {string} string "internal server error"
 // @Router /api/v1/cafes [post]
 func (h *CafeHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -142,6 +144,8 @@ func (h *CafeHandler) Create(w http.ResponseWriter, r *http.Request) {
 // @Param cafe body model.CafeUpdate true "Cafe payload"
 // @Success 200 {object} model.Cafe
 // @Failure 400 {string} string "invalid request body or invalid cafe id"
+// @Failure 401 {string} string "invalid or expired token"
+// @Failure 403 {string} string "permission denied"
 // @Failure 404 {string} string "data not found"
 // @Failure 500 {string} string "internal server error"
 // @Router /api/v1/cafes/{id} [patch]
@@ -182,6 +186,8 @@ func (h *CafeHandler) Update(w http.ResponseWriter, r *http.Request) {
 // @Param id path int true "Cafe ID"
 // @Success 204
 // @Failure 400 {string} string "invalid id"
+// @Failure 401 {string} string "invalid or expired token"
+// @Failure 403 {string} string "permission denied"
 // @Failure 404 {string} string "data not found"
 // @Failure 409 {string} string "cafe has dependent records"
 // @Failure 500 {string} string "internal server error"
