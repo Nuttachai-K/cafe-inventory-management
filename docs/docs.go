@@ -86,8 +86,26 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Filter by nearest station",
+                        "description": "Filter by nearest station (partial, case-insensitive match)",
                         "name": "station",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Customer latitude, must be provided together with lng",
+                        "name": "lat",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Customer longitude, must be provided together with lat",
+                        "name": "lng",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Max distance in km from lat/lng (requires lat and lng)",
+                        "name": "radius",
                         "in": "query"
                     },
                     {
@@ -108,7 +126,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "invalid limit",
+                        "description": "invalid query parameter",
                         "schema": {
                             "type": "string"
                         }
@@ -1584,6 +1602,9 @@ const docTemplate = `{
                 },
                 "created_at": {
                     "type": "string"
+                },
+                "distance_km": {
+                    "type": "number"
                 },
                 "id": {
                     "type": "integer"

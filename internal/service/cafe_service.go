@@ -11,7 +11,7 @@ import (
 
 type CafeService interface {
 	GetByID(ctx context.Context, id int) (*model.Cafe, error)
-	GetAll(ctx context.Context, station string, limit int) ([]model.Cafe, error)
+	GetAll(ctx context.Context, filter model.CafeFilter) ([]model.Cafe, error)
 	Create(ctx context.Context, cafe *model.Cafe) error
 	Update(ctx context.Context, id int, cu *model.CafeUpdate) (*model.Cafe, error)
 	Delete(ctx context.Context, id int) error
@@ -39,14 +39,33 @@ func (s *cafeService) GetByID(ctx context.Context, id int) (*model.Cafe, error) 
 	return cafe, nil
 }
 
-func (s *cafeService) GetAll(ctx context.Context, station string, limit int) ([]model.Cafe, error) {
-	if limit <= 0 {
-		limit = 20
+func (s *cafeService) GetAll(ctx context.Context, filter model.CafeFilter) ([]model.Cafe, error) {
+
+	if filter.Limit <= 0 {
+		filter.Limit = 20
 	}
-	if limit > 100 {
-		limit = 100
+	if filter.Limit > 100 {
+		filter.Limit = 100
 	}
-	return s.repo.GetAll(ctx, station, limit)
+	if (filter.Lat != nil) != (filter.Lng != nil) {
+		return nil, fmt.Errorf("%w: lat and lng must be provided together", ErrInvalidInput)
+	}
+	if filter.Lat != nil && (*filter.Lat < -90 || *filter.Lat > 90) {
+		return nil, fmt.Errorf("%w: invalid latitude", ErrInvalidInput)
+	}
+	if filter.Lng != nil && (*filter.Lng < -180 || *filter.Lng > 180) {
+		return nil, fmt.Errorf("%w: invalid longitude", ErrInvalidInput)
+	}
+	if filter.RadiusKm != nil {
+		if filter.Lat == nil {
+			return nil, fmt.Errorf("%w: radius requires lat and lng", ErrInvalidInput)
+		}
+		if *filter.RadiusKm <= 0 {
+			return nil, fmt.Errorf("%w: radius must be positive", ErrInvalidInput)
+		}
+	}
+
+	return s.repo.GetAll(ctx, filter)
 }
 
 func (s *cafeService) Create(ctx context.Context, cafe *model.Cafe) error {
