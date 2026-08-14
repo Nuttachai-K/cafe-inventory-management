@@ -186,7 +186,6 @@ func (h *ProductHandler) Update(w http.ResponseWriter, r *http.Request) {
 // @Failure 401 {string} string "invalid or expired token"
 // @Failure 403 {string} string "permission denied"
 // @Failure 404 {string} string "data not found"
-// @Failure 409 {string} string "product has dependent records"
 // @Failure 500 {string} string "internal server error"
 // @Router /api/v1/products/{id} [delete]
 func (h *ProductHandler) Delete(w http.ResponseWriter, r *http.Request) {
