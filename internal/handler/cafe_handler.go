@@ -59,29 +59,63 @@ func (h *CafeHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 // @Tags cafes
 // @Accept json
 // @Produce json
-// @Param station query string false "Filter by nearest station"
+// @Param station query string false "Filter by nearest station (partial, case-insensitive match)"
+// @Param lat query number false "Customer latitude, must be provided together with lng"
+// @Param lng query number false "Customer longitude, must be provided together with lat"
+// @Param radius query number false "Max distance in km from lat/lng (requires lat and lng)"
 // @Param limit query int false "Max results to return (default 20)"
 // @Success 200 {array} model.Cafe
-// @Failure 400 {string} string "invalid limit"
+// @Failure 400 {string} string "invalid query parameter"
 // @Failure 500 {string} string "internal server error"
 // @Router /api/v1/cafes [get]
 func (h *CafeHandler) GetAll(w http.ResponseWriter, r *http.Request) {
-	station := r.URL.Query().Get("station")
 
-	limit := 20
+	var filter model.CafeFilter
+
+	if v := r.URL.Query().Get("station"); v != "" {
+		filter.Station = &v
+	}
+
+	if v := r.URL.Query().Get("lat"); v != "" {
+		lat, err := strconv.ParseFloat(v, 64)
+		if err != nil {
+			http.Error(w, "invalid latitude", http.StatusBadRequest)
+			return
+		}
+		filter.Lat = &lat
+	}
+
+	if v := r.URL.Query().Get("lng"); v != "" {
+		lng, err := strconv.ParseFloat(v, 64)
+		if err != nil {
+			http.Error(w, "invalid longitude", http.StatusBadRequest)
+			return
+		}
+		filter.Lng = &lng
+	}
+
+	if v := r.URL.Query().Get("radius"); v != "" {
+		radius, err := strconv.ParseFloat(v, 64)
+		if err != nil {
+			http.Error(w, "invalid radius", http.StatusBadRequest)
+			return
+		}
+		filter.RadiusKm = &radius
+	}
+
+	filter.Limit = 20
 	if l := r.URL.Query().Get("limit"); l != "" {
 		parsed, err := strconv.Atoi(l)
 		if err != nil {
 			http.Error(w, "invalid limit", http.StatusBadRequest)
 			return
 		}
-		limit = parsed
+		filter.Limit = parsed
 	}
 
 	cafes, err := h.service.GetAll(
 		r.Context(),
-		station,
-		limit,
+		filter,
 	)
 	if err != nil {
 		writeError(w, err)
