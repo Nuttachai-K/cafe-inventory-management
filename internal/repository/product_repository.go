@@ -82,7 +82,7 @@ func (p *productRepository) GetAll(ctx context.Context, limit int) ([]model.Prod
 		FROM products
 		JOIN categories 
 		ON products.category_id = categories.id
-		WHERE 1=1
+		WHERE is_active = true
 		`
 
 	args := []any{}
@@ -244,8 +244,7 @@ func (p *productRepository) Delete(ctx context.Context, id int) error {
 
 	result, err := p.db.Exec(
 		ctx,
-		`DELETE FROM products
-		WHERE id = $1`,
+		`UPDATE products SET is_active = false WHERE id = $1`,
 		id,
 	)
 	if err != nil {

@@ -132,11 +132,7 @@ func (s *productService) Delete(ctx context.Context, id int) error {
 	defer tx.Rollback(ctx)
 
 	productRepoTx := repository.NewProductRepository(tx)
-	inventoryRepoTx := repository.NewInventoryRepository(tx)
 
-	if err := inventoryRepoTx.Delete(ctx, id); err != nil {
-		return translateErr(err)
-	}
 	if err := productRepoTx.Delete(ctx, id); err != nil {
 		return translateErr(err)
 	}
