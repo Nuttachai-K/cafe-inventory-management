@@ -16,6 +16,7 @@ type Cafe struct {
 	ClosingTime    time.Time `json:"closing_time"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
+	DistanceKm     *float64  `json:"distance_km,omitempty"`
 }
 
 type CafeUpdate struct {
@@ -37,6 +38,14 @@ type CafeCreate struct {
 	NearestStation string    `json:"nearest_station"`
 	OpeningTime    time.Time `json:"opening_time"`
 	ClosingTime    time.Time `json:"closing_time"`
+}
+
+type CafeFilter struct {
+	Station  *string
+	Limit    int
+	Lat      *float64
+	Lng      *float64
+	RadiusKm *float64
 }
 
 func (c Cafe) MarshalJSON() ([]byte, error) {
