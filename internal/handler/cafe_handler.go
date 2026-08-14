@@ -19,6 +19,17 @@ func NewCafeHandler(service service.CafeService) *CafeHandler {
 	}
 }
 
+// GetCafeByID godoc
+// @Summary Get a cafe by id
+// @Tags cafes
+// @Accept json
+// @Produce json
+// @Param id path int true "Cafe ID"
+// @Success 200 {object} model.Cafe
+// @Failure 400 {string} string "invalid cafe id"
+// @Failure 404 {string} string "data not found"
+// @Failure 500 {string} string "internal server error"
+// @Router /api/v1/cafes/{id} [get]
 func (h *CafeHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
@@ -43,6 +54,17 @@ func (h *CafeHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetAllCafe godoc
+// @Summary Get all cafes
+// @Tags cafes
+// @Accept json
+// @Produce json
+// @Param station query string false "Filter by nearest station"
+// @Param limit query int false "Max results to return (default 20)"
+// @Success 200 {array} model.Cafe
+// @Failure 400 {string} string "invalid limit"
+// @Failure 500 {string} string "internal server error"
+// @Router /api/v1/cafes [get]
 func (h *CafeHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	station := r.URL.Query().Get("station")
 
@@ -71,6 +93,19 @@ func (h *CafeHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// CreateCafe godoc
+// @Summary Create a cafe
+// @Tags cafes
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param cafe body model.CafeCreate true "Cafe payload"
+// @Success 201 {object} object{id=int,message=string}
+// @Failure 400 {string} string "invalid request body"
+// @Failure 401 {string} string "invalid or expired token"
+// @Failure 403 {string} string "permission denied"
+// @Failure 500 {string} string "internal server error"
+// @Router /api/v1/cafes [post]
 func (h *CafeHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	var cafe model.Cafe
@@ -99,6 +134,21 @@ func (h *CafeHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// UpdateCafe godoc
+// @Summary Update a cafe
+// @Tags cafes
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "Cafe ID"
+// @Param cafe body model.CafeUpdate true "Cafe payload"
+// @Success 200 {object} model.Cafe
+// @Failure 400 {string} string "invalid request body or invalid cafe id"
+// @Failure 401 {string} string "invalid or expired token"
+// @Failure 403 {string} string "permission denied"
+// @Failure 404 {string} string "data not found"
+// @Failure 500 {string} string "internal server error"
+// @Router /api/v1/cafes/{id} [patch]
 func (h *CafeHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.PathValue("id"))
@@ -127,6 +177,21 @@ func (h *CafeHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// DeleteCafe godoc
+// @Summary Delete a cafe
+// @Tags cafes
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "Cafe ID"
+// @Success 204
+// @Failure 400 {string} string "invalid id"
+// @Failure 401 {string} string "invalid or expired token"
+// @Failure 403 {string} string "permission denied"
+// @Failure 404 {string} string "data not found"
+// @Failure 409 {string} string "cafe has dependent records"
+// @Failure 500 {string} string "internal server error"
+// @Router /api/v1/cafes/{id} [delete]
 func (h *CafeHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.PathValue("id"))

@@ -70,6 +70,8 @@ func (il *inventoryLogRepository) GetLog(ctx context.Context, filter *model.Inve
 		argID++
 	}
 
+	query += " ORDER BY id"
+
 	if limit > 0 {
 		query += fmt.Sprintf(" LIMIT $%d", argID)
 		args = append(args, limit)

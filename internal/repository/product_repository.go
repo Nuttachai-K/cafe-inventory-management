@@ -88,6 +88,8 @@ func (p *productRepository) GetAll(ctx context.Context, limit int) ([]model.Prod
 	args := []any{}
 	argID := 1
 
+	query += " ORDER BY id"
+
 	if limit > 0 {
 		query += fmt.Sprintf(" LIMIT $%d", argID)
 		args = append(args, limit)
@@ -155,7 +157,7 @@ func (p *productRepository) Create(ctx context.Context, product *model.Product) 
 func (p *productRepository) Update(ctx context.Context, id int, pu *model.ProductUpdate) (*model.ProductWithCategory, error) {
 
 	setClauses := []string{}
-	args := []interface{}{}
+	args := []any{}
 	argPos := 2
 
 	addClauses := func(column string, value any) {

@@ -1,0 +1,1227 @@
+basePath: /
+definitions:
+  model.Authentication:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  model.Cafe:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      address:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      nearest_station:
+        type: string
+      opening_time:
+        type: string
+      closing_time:
+        type: string
+      created_at:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.CafeCreate:
+    properties:
+      name:
+        type: string
+      address:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      nearest_station:
+        type: string
+      opening_time:
+        type: string
+      closing_time:
+        type: string
+    type: object
+  model.CafeUpdate:
+    properties:
+      name:
+        type: string
+      address:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      nearest_station:
+        type: string
+      opening_time:
+        type: string
+      closing_time:
+        type: string
+    type: object
+  model.Category:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      created_at:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.InventoryLog:
+    properties:
+      id:
+        type: integer
+      inventory_id:
+        type: integer
+      user_id:
+        type: integer
+      change_quantity:
+        type: integer
+      operation:
+        type: string
+      created_at:
+        type: string
+    type: object
+  model.InventoryUpdateRequest:
+    properties:
+      operation:
+        type: string
+      change_quantity:
+        type: integer
+    type: object
+  model.InventoryWithProduct:
+    properties:
+      id:
+        type: integer
+      product_id:
+        type: integer
+      product_name:
+        type: string
+      cafe_id:
+        type: integer
+      cafe_name:
+        type: string
+      stock_quantity:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  model.ProductCreate:
+    properties:
+      cafe_id:
+        type: integer
+      category_id:
+        type: integer
+      name:
+        type: string
+      description:
+        type: string
+      price:
+        type: number
+    type: object
+  model.ProductUpdate:
+    properties:
+      cafe_id:
+        type: integer
+      category_id:
+        type: integer
+      name:
+        type: string
+      description:
+        type: string
+      price:
+        type: number
+      is_active:
+        type: boolean
+    type: object
+  model.ProductWithCategory:
+    properties:
+      id:
+        type: integer
+      cafe_id:
+        type: integer
+      category_id:
+        type: integer
+      category_name:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      price:
+        type: number
+      is_active:
+        type: boolean
+      created_at:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.User:
+    properties:
+      id:
+        type: integer
+      username:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      user_role:
+        $ref: '#/definitions/model.UserRole'
+      is_active:
+        type: boolean
+      created_at:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.UserCreate:
+    properties:
+      username:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      user_role:
+        $ref: '#/definitions/model.UserRole'
+    type: object
+  model.UserRole:
+    enum:
+    - ADMIN
+    - STAFF
+    type: string
+    x-enum-varnames:
+    - RoleAdmin
+    - RoleStaff
+  model.UserUpdate:
+    properties:
+      id:
+        type: integer
+      username:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      password_hash:
+        type: string
+      user_role:
+        $ref: '#/definitions/model.UserRole'
+      is_active:
+        type: boolean
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: REST API for multi-branch cafe chain inventory
+  title: Cafe Inventory Management API
+  version: "1.0"
+paths:
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Login payload
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/model.Authentication'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            properties:
+              token:
+                type: string
+            type: object
+        "400":
+          description: invalid request body
+          schema:
+            type: string
+        "401":
+          description: invalid credential or inactive user
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Login
+      tags:
+      - auth
+  /api/v1/cafes:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Filter by nearest station
+        in: query
+        name: station
+        type: string
+      - description: Max results to return (default 20)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Cafe'
+            type: array
+        "400":
+          description: invalid limit
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get all cafes
+      tags:
+      - cafes
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Cafe payload
+        in: body
+        name: cafe
+        required: true
+        schema:
+          $ref: '#/definitions/model.CafeCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            properties:
+              id:
+                type: integer
+              message:
+                type: string
+            type: object
+        "400":
+          description: invalid request body
+          schema:
+            type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a cafe
+      tags:
+      - cafes
+  /api/v1/cafes/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Cafe ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: invalid id
+          schema:
+            type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "409":
+          description: cafe has dependent records
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a cafe
+      tags:
+      - cafes
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Cafe ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Cafe'
+        "400":
+          description: invalid cafe id
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get a cafe by id
+      tags:
+      - cafes
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Cafe ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Cafe payload
+        in: body
+        name: cafe
+        required: true
+        schema:
+          $ref: '#/definitions/model.CafeUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Cafe'
+        "400":
+          description: invalid request body or invalid cafe id
+          schema:
+            type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update a cafe
+      tags:
+      - cafes
+  /api/v1/categories:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Max results to return (default 20)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Category'
+            type: array
+        "400":
+          description: invalid limit
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get all categories
+      tags:
+      - categories
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category payload
+        in: body
+        name: category
+        required: true
+        schema:
+          properties:
+            name:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            properties:
+              id:
+                type: integer
+              message:
+                type: string
+            type: object
+        "400":
+          description: invalid request body
+          schema:
+            type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
+          schema:
+            type: string
+        "409":
+          description: category name is already used
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a category
+      tags:
+      - categories
+  /api/v1/categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: invalid category id
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "409":
+          description: category has dependent records
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a category
+      tags:
+      - categories
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Category'
+        "400":
+          description: invalid category id
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get a category by id
+      tags:
+      - categories
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Category payload
+        in: body
+        name: category
+        required: true
+        schema:
+          properties:
+            name:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Category'
+        "400":
+          description: invalid request body or invalid category id
+          schema:
+            type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "409":
+          description: category name is already used
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update a category
+      tags:
+      - categories
+  /api/v1/inventory:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product name
+        in: query
+        name: name
+        type: string
+      - description: Max results to return (default 20)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.InventoryWithProduct'
+            type: array
+        "400":
+          description: invalid limit
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get all inventories
+      tags:
+      - inventory
+  /api/v1/inventory/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Inventory ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.InventoryWithProduct'
+        "400":
+          description: invalid inventory id
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get a inventory by id
+      tags:
+      - inventory
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Inventory payload
+        in: body
+        name: inventory
+        required: true
+        schema:
+          $ref: '#/definitions/model.InventoryUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              ' stock_quantity':
+                type: integer
+              message:
+                type: string
+            type: object
+        "400":
+          description: invalid request body or invalid product id
+          schema:
+            type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "409":
+          description: insufficient stock
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update a stock
+      tags:
+      - inventory
+  /api/v1/inventory/logs:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Inventory id
+        in: query
+        name: inventory_id
+        type: string
+      - description: User id
+        in: query
+        name: user_id
+        type: string
+      - description: Operation
+        in: query
+        name: operation
+        type: string
+      - description: Starting time
+        in: query
+        name: from
+        type: string
+      - description: End time
+        in: query
+        name: to
+        type: string
+      - description: Max results to return (default 20)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.InventoryLog'
+            type: array
+        "400":
+          description: invalid query parameter or value
+          schema:
+            type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all logs
+      tags:
+      - log
+  /api/v1/products:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Max results to return (default 20)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.ProductWithCategory'
+            type: array
+        "400":
+          description: invalid limit
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get all products
+      tags:
+      - products
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product payload
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/model.ProductCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            properties:
+              id:
+                type: integer
+              message:
+                type: string
+            type: object
+        "400":
+          description: invalid request body
+          schema:
+            type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a product
+      tags:
+      - products
+  /api/v1/products/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: invalid product id
+          schema:
+            type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "409":
+          description: product has dependent records
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a product
+      tags:
+      - products
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ProductWithCategory'
+        "400":
+          description: invalid product id
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get a product by id
+      tags:
+      - products
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Product payload
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/model.ProductUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ProductWithCategory'
+        "400":
+          description: invalid request body or invalid product id
+          schema:
+            type: string
+        "401":
+          description: invalid or expired token
+          schema:
+            type: string
+        "403":
+          description: permission denied
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "409":
+          description: referenced cafe_id or category_id does not exist
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update a product
+      tags:
+      - products
+  /api/v1/users:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Max results to return (default 20)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.User'
+            type: array
+        "400":
+          description: invalid limit
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User payload
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            properties:
+              id:
+                type: integer
+              message:
+                type: string
+            type: object
+        "400":
+          description: invalid request body
+          schema:
+            type: string
+        "409":
+          description: email is already used
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a user
+      tags:
+      - users
+  /api/v1/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: invalid user id
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "409":
+          description: user has dependent records
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: invalid user id
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get a user by id
+      tags:
+      - users
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User payload
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: invalid request body or invalid user id
+          schema:
+            type: string
+        "409":
+          description: email is already used
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update a user
+      tags:
+      - users
+schemes:
+- http
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

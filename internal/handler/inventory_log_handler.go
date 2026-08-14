@@ -20,6 +20,24 @@ func NewInventoryLogHandler(service service.InventoryLogService) *InventoryLogHa
 	}
 }
 
+// GetLogs godoc
+// @Summary Get all logs
+// @Tags log
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param inventory_id query string false "Inventory id"
+// @Param user_id query string false "User id"
+// @Param operation query string false "Operation"
+// @Param from query string false "Starting time"
+// @Param to query string false "End time"
+// @Param limit query int false "Max results to return (default 20)"
+// @Success 200 {array} model.InventoryLog
+// @Failure 400 {string} string "invalid query parameter or value"
+// @Failure 401 {string} string "invalid or expired token"
+// @Failure 403 {string} string "permission denied"
+// @Failure 500 {string} string "internal server error"
+// @Router /api/v1/inventory/logs [get]
 func (h *InventoryLogHandler) GetLogs(w http.ResponseWriter, r *http.Request) {
 
 	var filter model.InventoryLogFilter
@@ -48,6 +66,10 @@ func (h *InventoryLogHandler) GetLogs(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		filter.UserId = &id
+	}
+
+	if v := r.URL.Query().Get("operation"); v != "" {
+		filter.Operation = &v
 	}
 
 	if v := r.URL.Query().Get("from"); v != "" {

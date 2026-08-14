@@ -28,6 +28,14 @@ type UserUpdate struct {
 	IsActive     *bool     `json:"is_active,omitempty"`
 }
 
+// For swagger documentation
+type UserCreate struct {
+	Username string   `json:"username"`
+	Email    string   `json:"email"`
+	Password string   `json:"password"`
+	UserRole UserRole `json:"user_role"`
+}
+
 type UserRole string
 
 const (
