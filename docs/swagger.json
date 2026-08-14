@@ -1573,17 +1573,14 @@
         "model.Cafe": {
             "type": "object",
             "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "closing_time": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
                 },
                 "latitude": {
                     "type": "number"
@@ -1591,13 +1588,16 @@
                 "longitude": {
                     "type": "number"
                 },
-                "name": {
-                    "type": "string"
-                },
                 "nearest_station": {
                     "type": "string"
                 },
                 "opening_time": {
+                    "type": "string"
+                },
+                "closing_time": {
+                    "type": "string"
+                },
+                "created_at": {
                     "type": "string"
                 },
                 "updated_at": {
@@ -1608,10 +1608,10 @@
         "model.CafeCreate": {
             "type": "object",
             "properties": {
-                "address": {
+                "name": {
                     "type": "string"
                 },
-                "closing_time": {
+                "address": {
                     "type": "string"
                 },
                 "latitude": {
@@ -1620,13 +1620,13 @@
                 "longitude": {
                     "type": "number"
                 },
-                "name": {
-                    "type": "string"
-                },
                 "nearest_station": {
                     "type": "string"
                 },
                 "opening_time": {
+                    "type": "string"
+                },
+                "closing_time": {
                     "type": "string"
                 }
             }
@@ -1634,10 +1634,10 @@
         "model.CafeUpdate": {
             "type": "object",
             "properties": {
-                "address": {
+                "name": {
                     "type": "string"
                 },
-                "closing_time": {
+                "address": {
                     "type": "string"
                 },
                 "latitude": {
@@ -1645,14 +1645,14 @@
                 },
                 "longitude": {
                     "type": "number"
-                },
-                "name": {
-                    "type": "string"
-                },
+                },   
                 "nearest_station": {
                     "type": "string"
                 },
                 "opening_time": {
+                    "type": "string"
+                },
+                "closing_time": {
                     "type": "string"
                 }
             }
@@ -1660,13 +1660,13 @@
         "model.Category": {
             "type": "object",
             "properties": {
-                "created_at": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "created_at": {
                     "type": "string"
                 },
                 "updated_at": {
@@ -1677,46 +1677,40 @@
         "model.InventoryLog": {
             "type": "object",
             "properties": {
-                "change_quantity": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
                 "inventory_id": {
                     "type": "integer"
                 },
-                "operation": {
-                    "type": "string"
-                },
                 "user_id": {
                     "type": "integer"
-                }
-            }
-        },
-        "model.InventoryUpdateRequest": {
-            "type": "object",
-            "properties": {
+                },
                 "change_quantity": {
                     "type": "integer"
                 },
                 "operation": {
                     "type": "string"
-                }
+                },
+                "created_at": {
+                    "type": "string"
+                } 
+            }
+        },
+        "model.InventoryUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "operation": {
+                    "type": "string"
+                },
+                "change_quantity": {
+                    "type": "integer"
+                }              
             }
         },
         "model.InventoryWithProduct": {
             "type": "object",
             "properties": {
-                "cafe_id": {
-                    "type": "integer"
-                },
-                "cafe_name": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
@@ -1724,6 +1718,12 @@
                     "type": "integer"
                 },
                 "product_name": {
+                    "type": "string"
+                },
+                "cafe_id": {
+                    "type": "integer"
+                },
+                "cafe_name": {
                     "type": "string"
                 },
                 "stock_quantity": {
@@ -1743,10 +1743,10 @@
                 "category_id": {
                     "type": "integer"
                 },
-                "description": {
+                "name": {
                     "type": "string"
                 },
-                "name": {
+                "description": {
                     "type": "string"
                 },
                 "price": {
@@ -1763,23 +1763,26 @@
                 "category_id": {
                     "type": "integer"
                 },
-                "description": {
-                    "type": "string"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
                 "name": {
                     "type": "string"
                 },
+                "description": {
+                    "type": "string"
+                },      
                 "price": {
                     "type": "number"
+                },
+                "is_active": {
+                    "type": "boolean"
                 }
             }
         },
         "model.ProductWithCategory": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "cafe_id": {
                     "type": "integer"
                 },
@@ -1789,23 +1792,20 @@
                 "category_name": {
                     "type": "string"
                 },
-                "created_at": {
+                "name": {
                     "type": "string"
                 },
                 "description": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
+                "price": {
+                    "type": "number"
                 },
                 "is_active": {
                     "type": "boolean"
                 },
-                "name": {
+                "created_at": {
                     "type": "string"
-                },
-                "price": {
-                    "type": "number"
                 },
                 "updated_at": {
                     "type": "string"
@@ -1815,28 +1815,28 @@
         "model.User": {
             "type": "object",
             "properties": {
-                "created_at": {
+                "id": {
+                    "type": "integer"
+                },
+                "username": {
                     "type": "string"
                 },
                 "email": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
                 "password": {
-                    "type": "string"
-                },
-                "updated_at": {
                     "type": "string"
                 },
                 "user_role": {
                     "$ref": "#/definitions/model.UserRole"
                 },
-                "username": {
+                "is_active": {
+                    "type": "boolean"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -1844,6 +1844,9 @@
         "model.UserCreate": {
             "type": "object",
             "properties": {
+                "username": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -1852,9 +1855,6 @@
                 },
                 "user_role": {
                     "$ref": "#/definitions/model.UserRole"
-                },
-                "username": {
-                    "type": "string"
                 }
             }
         },
@@ -1872,14 +1872,14 @@
         "model.UserUpdate": {
             "type": "object",
             "properties": {
-                "email": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
-                "is_active": {
-                    "type": "boolean"
+                "username": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
                 },
                 "password": {
                     "type": "string"
@@ -1890,9 +1890,10 @@
                 "user_role": {
                     "$ref": "#/definitions/model.UserRole"
                 },
-                "username": {
-                    "type": "string"
+                "is_active": {
+                    "type": "boolean"
                 }
+               
             }
         }
     },

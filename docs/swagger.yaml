@@ -9,105 +9,105 @@ definitions:
     type: object
   model.Cafe:
     properties:
-      address:
-        type: string
-      closing_time:
-        type: string
-      created_at:
-        type: string
       id:
         type: integer
+      name:
+        type: string
+      address:
+        type: string
       latitude:
         type: number
       longitude:
         type: number
-      name:
-        type: string
       nearest_station:
         type: string
       opening_time:
+        type: string
+      closing_time:
+        type: string
+      created_at:
         type: string
       updated_at:
         type: string
     type: object
   model.CafeCreate:
     properties:
-      address:
+      name:
         type: string
-      closing_time:
+      address:
         type: string
       latitude:
         type: number
       longitude:
         type: number
-      name:
-        type: string
       nearest_station:
         type: string
       opening_time:
+        type: string
+      closing_time:
         type: string
     type: object
   model.CafeUpdate:
     properties:
-      address:
+      name:
         type: string
-      closing_time:
+      address:
         type: string
       latitude:
         type: number
       longitude:
         type: number
-      name:
-        type: string
       nearest_station:
         type: string
       opening_time:
         type: string
+      closing_time:
+        type: string
     type: object
   model.Category:
     properties:
-      created_at:
-        type: string
       id:
         type: integer
       name:
+        type: string
+      created_at:
         type: string
       updated_at:
         type: string
     type: object
   model.InventoryLog:
     properties:
-      change_quantity:
-        type: integer
-      created_at:
-        type: string
       id:
         type: integer
       inventory_id:
         type: integer
-      operation:
-        type: string
       user_id:
         type: integer
-    type: object
-  model.InventoryUpdateRequest:
-    properties:
       change_quantity:
         type: integer
       operation:
         type: string
+      created_at:
+        type: string
+    type: object
+  model.InventoryUpdateRequest:
+    properties:
+      operation:
+        type: string
+      change_quantity:
+        type: integer
     type: object
   model.InventoryWithProduct:
     properties:
-      cafe_id:
-        type: integer
-      cafe_name:
-        type: string
       id:
         type: integer
       product_id:
         type: integer
       product_name:
+        type: string
+      cafe_id:
+        type: integer
+      cafe_name:
         type: string
       stock_quantity:
         type: integer
@@ -120,9 +120,9 @@ definitions:
         type: integer
       category_id:
         type: integer
-      description:
-        type: string
       name:
+        type: string
+      description:
         type: string
       price:
         type: number
@@ -133,67 +133,67 @@ definitions:
         type: integer
       category_id:
         type: integer
-      description:
-        type: string
-      is_active:
-        type: boolean
       name:
+        type: string
+      description:
         type: string
       price:
         type: number
+      is_active:
+        type: boolean
     type: object
   model.ProductWithCategory:
     properties:
+      id:
+        type: integer
       cafe_id:
         type: integer
       category_id:
         type: integer
       category_name:
         type: string
-      created_at:
+      name:
         type: string
       description:
         type: string
-      id:
-        type: integer
-      is_active:
-        type: boolean
-      name:
-        type: string
       price:
         type: number
+      is_active:
+        type: boolean
+      created_at:
+        type: string
       updated_at:
         type: string
     type: object
   model.User:
     properties:
-      created_at:
+      id:
+        type: integer
+      username:
         type: string
       email:
         type: string
-      id:
-        type: integer
-      is_active:
-        type: boolean
       password:
-        type: string
-      updated_at:
         type: string
       user_role:
         $ref: '#/definitions/model.UserRole'
-      username:
+      is_active:
+        type: boolean
+      created_at:
+        type: string
+      updated_at:
         type: string
     type: object
   model.UserCreate:
     properties:
+      username:
+        type: string
       email:
         type: string
       password:
         type: string
       user_role:
         $ref: '#/definitions/model.UserRole'
-      username:
-        type: string
     type: object
   model.UserRole:
     enum:
@@ -205,20 +205,20 @@ definitions:
     - RoleStaff
   model.UserUpdate:
     properties:
-      email:
-        type: string
       id:
         type: integer
-      is_active:
-        type: boolean
+      username:
+        type: string
+      email:
+        type: string
       password:
         type: string
       password_hash:
         type: string
       user_role:
         $ref: '#/definitions/model.UserRole'
-      username:
-        type: string
+      is_active:
+        type: boolean
     type: object
 host: localhost:8080
 info:
