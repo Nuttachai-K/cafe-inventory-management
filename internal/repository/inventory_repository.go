@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
-	"github.com/jackc/pgx/v5"
 )
 
 type InventoryRepository interface {
@@ -14,7 +13,6 @@ type InventoryRepository interface {
 	GetAll(ctx context.Context, productName string, limit int) ([]model.InventoryWithProduct, error)
 	Create(ctx context.Context, inventory *model.Inventory) error
 	UpdateStock(ctx context.Context, id int, quantity int, isAdjust bool) (int, int, error)
-	Delete(ctx context.Context, id int) error
 }
 
 type inventoryRepository struct {
@@ -169,21 +167,4 @@ func (i *inventoryRepository) UpdateStock(ctx context.Context, id int, changeVal
 	err = i.db.QueryRow(ctx, `UPDATE inventory SET stock_quantity = $1 WHERE product_id = $2 RETURNING id, stock_quantity`, newQty, id).Scan(&inventoryID, &stockQuantity)
 
 	return inventoryID, stockQuantity, err
-}
-
-func (i *inventoryRepository) Delete(ctx context.Context, id int) error {
-
-	result, err := i.db.Exec(
-		ctx,
-		`DELETE FROM inventory
-		WHERE product_id = $1`,
-		id,
-	)
-	if err != nil {
-		return err
-	}
-	if result.RowsAffected() == 0 {
-		return pgx.ErrNoRows
-	}
-	return err
 }

@@ -179,7 +179,6 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 // @Success 204
 // @Failure 400 {string} string "invalid user id"
 // @Failure 404 {string} string "data not found"
-// @Failure 409 {string} string "user has dependent records"
 // @Failure 500 {string} string "internal server error"
 // @Router /api/v1/users/{id} [delete]
 func (h *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {

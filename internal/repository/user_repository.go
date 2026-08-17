@@ -248,8 +248,7 @@ func (u *userRepository) Update(ctx context.Context, id int, uu *model.UserUpdat
 func (u *userRepository) Delete(ctx context.Context, id int) error {
 	result, err := u.db.Exec(
 		ctx,
-		`DELETE FROM users
-		WHERE id = $1`,
+		`UPDATE users SET is_active = false WHERE id = $1`,
 		id,
 	)
 	if err != nil {
