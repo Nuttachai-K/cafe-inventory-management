@@ -125,17 +125,9 @@ func (s *productService) Delete(ctx context.Context, id int) error {
 		return fmt.Errorf("%w: id must be positive", ErrInvalidInput)
 	}
 
-	tx, err := s.pool.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback(ctx)
-
-	productRepoTx := repository.NewProductRepository(tx)
-
-	if err := productRepoTx.Delete(ctx, id); err != nil {
+	if err := s.repo.Delete(ctx, id); err != nil {
 		return translateErr(err)
 	}
 
-	return tx.Commit(ctx)
+	return nil
 }

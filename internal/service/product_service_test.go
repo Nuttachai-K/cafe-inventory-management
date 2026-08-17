@@ -192,6 +192,8 @@ func TestProductService_Delete(t *testing.T) {
 		wantErr  error
 	}{
 		{name: "invalid id", id: 0, wantErr: ErrInvalidInput},
+		{name: "success", id: 1, deleteFn: func(ctx context.Context, id int) error { return nil }, wantErr: nil},
+		{name: "not found", id: 1, deleteFn: func(ctx context.Context, id int) error { return pgx.ErrNoRows }, wantErr: ErrDataNotFound},
 	}
 
 	for _, tt := range tests {
