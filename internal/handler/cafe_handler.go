@@ -26,15 +26,15 @@ func NewCafeHandler(service service.CafeService) *CafeHandler {
 // @Produce json
 // @Param id path int true "Cafe ID"
 // @Success 200 {object} model.Cafe
-// @Failure 400 {string} string "invalid cafe id"
-// @Failure 404 {string} string "data not found"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid cafe id"
+// @Failure 404 {object} model.ErrorResponse "data not found"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/cafes/{id} [get]
 func (h *CafeHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(
+		writeJSONError(
 			w,
 			"Invalid cafe id",
 			http.StatusBadRequest,
@@ -65,8 +65,8 @@ func (h *CafeHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 // @Param radius query number false "Max distance in km from lat/lng (requires lat and lng)"
 // @Param limit query int false "Max results to return (default 20)"
 // @Success 200 {array} model.Cafe
-// @Failure 400 {string} string "invalid query parameter"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid query parameter"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/cafes [get]
 func (h *CafeHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 
@@ -79,7 +79,7 @@ func (h *CafeHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	if v := r.URL.Query().Get("lat"); v != "" {
 		lat, err := strconv.ParseFloat(v, 64)
 		if err != nil {
-			http.Error(w, "invalid latitude", http.StatusBadRequest)
+			writeJSONError(w, "invalid latitude", http.StatusBadRequest)
 			return
 		}
 		filter.Lat = &lat
@@ -88,7 +88,7 @@ func (h *CafeHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	if v := r.URL.Query().Get("lng"); v != "" {
 		lng, err := strconv.ParseFloat(v, 64)
 		if err != nil {
-			http.Error(w, "invalid longitude", http.StatusBadRequest)
+			writeJSONError(w, "invalid longitude", http.StatusBadRequest)
 			return
 		}
 		filter.Lng = &lng
@@ -97,7 +97,7 @@ func (h *CafeHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	if v := r.URL.Query().Get("radius"); v != "" {
 		radius, err := strconv.ParseFloat(v, 64)
 		if err != nil {
-			http.Error(w, "invalid radius", http.StatusBadRequest)
+			writeJSONError(w, "invalid radius", http.StatusBadRequest)
 			return
 		}
 		filter.RadiusKm = &radius
@@ -107,7 +107,7 @@ func (h *CafeHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	if l := r.URL.Query().Get("limit"); l != "" {
 		parsed, err := strconv.Atoi(l)
 		if err != nil {
-			http.Error(w, "invalid limit", http.StatusBadRequest)
+			writeJSONError(w, "invalid limit", http.StatusBadRequest)
 			return
 		}
 		filter.Limit = parsed
@@ -135,17 +135,17 @@ func (h *CafeHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Param cafe body model.CafeCreate true "Cafe payload"
 // @Success 201 {object} object{id=int,message=string}
-// @Failure 400 {string} string "invalid request body"
-// @Failure 401 {string} string "invalid or expired token"
-// @Failure 403 {string} string "permission denied"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid request body"
+// @Failure 401 {object} model.ErrorResponse "invalid or expired token"
+// @Failure 403 {object} model.ErrorResponse "permission denied"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/cafes [post]
 func (h *CafeHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	var cafe model.Cafe
 
 	if err := json.NewDecoder(r.Body).Decode(&cafe); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		writeJSONError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
@@ -177,24 +177,24 @@ func (h *CafeHandler) Create(w http.ResponseWriter, r *http.Request) {
 // @Param id path int true "Cafe ID"
 // @Param cafe body model.CafeUpdate true "Cafe payload"
 // @Success 200 {object} model.Cafe
-// @Failure 400 {string} string "invalid request body or invalid cafe id"
-// @Failure 401 {string} string "invalid or expired token"
-// @Failure 403 {string} string "permission denied"
-// @Failure 404 {string} string "data not found"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid request body or invalid cafe id"
+// @Failure 401 {object} model.ErrorResponse "invalid or expired token"
+// @Failure 403 {object} model.ErrorResponse "permission denied"
+// @Failure 404 {object} model.ErrorResponse "data not found"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/cafes/{id} [patch]
 func (h *CafeHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
-		http.Error(w, "invalid id", http.StatusBadRequest)
+		writeJSONError(w, "invalid id", http.StatusBadRequest)
 		return
 	}
 
 	var req model.CafeUpdate
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		writeJSONError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
@@ -219,18 +219,18 @@ func (h *CafeHandler) Update(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Param id path int true "Cafe ID"
 // @Success 204
-// @Failure 400 {string} string "invalid id"
-// @Failure 401 {string} string "invalid or expired token"
-// @Failure 403 {string} string "permission denied"
-// @Failure 404 {string} string "data not found"
-// @Failure 409 {string} string "cafe has dependent records"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid id"
+// @Failure 401 {object} model.ErrorResponse "invalid or expired token"
+// @Failure 403 {object} model.ErrorResponse "permission denied"
+// @Failure 404 {object} model.ErrorResponse "data not found"
+// @Failure 409 {object} model.ErrorResponse "cafe has dependent records"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/cafes/{id} [delete]
 func (h *CafeHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
-		http.Error(w, "invalid id", http.StatusBadRequest)
+		writeJSONError(w, "invalid id", http.StatusBadRequest)
 		return
 	}
 

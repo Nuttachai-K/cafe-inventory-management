@@ -26,15 +26,15 @@ func NewCategoryHandler(service service.CategoryService) *CategoryHandler {
 // @Produce json
 // @Param id path int true "Category ID"
 // @Success 200 {object} model.Category
-// @Failure 400 {string} string "invalid category id"
-// @Failure 404 {string} string "data not found"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid category id"
+// @Failure 404 {object} model.ErrorResponse "data not found"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/categories/{id} [get]
 func (h *CategoryHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(
+		writeJSONError(
 			w,
 			"Invalid user id",
 			http.StatusBadRequest,
@@ -61,15 +61,15 @@ func (h *CategoryHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param limit query int false "Max results to return (default 20)"
 // @Success 200 {array} model.Category
-// @Failure 400 {string} string "invalid limit"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid limit"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/categories [get]
 func (h *CategoryHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	limit := 20
 	if l := r.URL.Query().Get("limit"); l != "" {
 		parsed, err := strconv.Atoi(l)
 		if err != nil {
-			http.Error(w, "invalid limit", http.StatusBadRequest)
+			writeJSONError(w, "invalid limit", http.StatusBadRequest)
 			return
 		}
 		limit = parsed
@@ -97,17 +97,17 @@ func (h *CategoryHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Param category body object{name=string} true "Category payload"
 // @Success 201 {object} object{id=int,message=string}
-// @Failure 400 {string} string "invalid request body"
-// @Failure 401 {string} string "invalid or expired token"
-// @Failure 403 {string} string "permission denied"
-// @Failure 409 {string} string "category name is already used"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid request body"
+// @Failure 401 {object} model.ErrorResponse "invalid or expired token"
+// @Failure 403 {object} model.ErrorResponse "permission denied"
+// @Failure 409 {object} model.ErrorResponse "category name is already used"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/categories [post]
 func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var category model.Category
 
 	if err := json.NewDecoder(r.Body).Decode(&category); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		writeJSONError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
@@ -138,17 +138,17 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 // @Param id path int true "Category ID"
 // @Param category body object{name=string} true "Category payload"
 // @Success 200 {object} model.Category
-// @Failure 400 {string} string "invalid request body or invalid category id"
-// @Failure 401 {string} string "invalid or expired token"
-// @Failure 403 {string} string "permission denied"
-// @Failure 404 {string} string "data not found"
-// @Failure 409 {string} string "category name is already used"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid request body or invalid category id"
+// @Failure 401 {object} model.ErrorResponse "invalid or expired token"
+// @Failure 403 {object} model.ErrorResponse "permission denied"
+// @Failure 404 {object} model.ErrorResponse "data not found"
+// @Failure 409 {object} model.ErrorResponse "category name is already used"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/categories/{id} [patch]
 func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
-		http.Error(w, "invalid id", http.StatusBadRequest)
+		writeJSONError(w, "invalid id", http.StatusBadRequest)
 		return
 	}
 
@@ -157,7 +157,7 @@ func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		writeJSONError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
@@ -182,16 +182,16 @@ func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Param id path int true "Category ID"
 // @Success 204
-// @Failure 400 {string} string "invalid category id"
-// @Failure 404 {string} string "data not found"
-// @Failure 409 {string} string "category has dependent records"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid category id"
+// @Failure 404 {object} model.ErrorResponse "data not found"
+// @Failure 409 {object} model.ErrorResponse "category has dependent records"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/categories/{id} [delete]
 func (h *CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
-		http.Error(w, "invalid id", http.StatusBadRequest)
+		writeJSONError(w, "invalid id", http.StatusBadRequest)
 		return
 	}
 

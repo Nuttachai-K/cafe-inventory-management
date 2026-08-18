@@ -33,10 +33,10 @@ func NewInventoryLogHandler(service service.InventoryLogService) *InventoryLogHa
 // @Param to query string false "End time"
 // @Param limit query int false "Max results to return (default 20)"
 // @Success 200 {array} model.InventoryLog
-// @Failure 400 {string} string "invalid query parameter or value"
-// @Failure 401 {string} string "invalid or expired token"
-// @Failure 403 {string} string "permission denied"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid query parameter or value"
+// @Failure 401 {object} model.ErrorResponse "invalid or expired token"
+// @Failure 403 {object} model.ErrorResponse "permission denied"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/inventory/logs [get]
 func (h *InventoryLogHandler) GetLogs(w http.ResponseWriter, r *http.Request) {
 
@@ -45,7 +45,7 @@ func (h *InventoryLogHandler) GetLogs(w http.ResponseWriter, r *http.Request) {
 	if v := r.URL.Query().Get("inventory_id"); v != "" {
 		id, err := strconv.Atoi(v)
 		if err != nil {
-			http.Error(
+			writeJSONError(
 				w,
 				"Invalid inventory id",
 				http.StatusBadRequest,
@@ -58,7 +58,7 @@ func (h *InventoryLogHandler) GetLogs(w http.ResponseWriter, r *http.Request) {
 	if v := r.URL.Query().Get("user_id"); v != "" {
 		id, err := strconv.Atoi(v)
 		if err != nil {
-			http.Error(
+			writeJSONError(
 				w,
 				"Invalid user id",
 				http.StatusBadRequest,
@@ -75,7 +75,7 @@ func (h *InventoryLogHandler) GetLogs(w http.ResponseWriter, r *http.Request) {
 	if v := r.URL.Query().Get("from"); v != "" {
 		from, err := time.Parse(time.DateOnly, v) // "2006-01-02"
 		if err != nil {
-			http.Error(w, "invalid from date", http.StatusBadRequest)
+			writeJSONError(w, "invalid from date", http.StatusBadRequest)
 			return
 		}
 		filter.From = &from
@@ -84,7 +84,7 @@ func (h *InventoryLogHandler) GetLogs(w http.ResponseWriter, r *http.Request) {
 	if v := r.URL.Query().Get("to"); v != "" {
 		to, err := time.Parse(time.DateOnly, v)
 		if err != nil {
-			http.Error(w, "invalid to date", http.StatusBadRequest)
+			writeJSONError(w, "invalid to date", http.StatusBadRequest)
 			return
 		}
 		filter.To = &to
@@ -94,7 +94,7 @@ func (h *InventoryLogHandler) GetLogs(w http.ResponseWriter, r *http.Request) {
 	if l := r.URL.Query().Get("limit"); l != "" {
 		parsed, err := strconv.Atoi(l)
 		if err != nil {
-			http.Error(w, "invalid limit", http.StatusBadRequest)
+			writeJSONError(w, "invalid limit", http.StatusBadRequest)
 			return
 		}
 		limit = parsed

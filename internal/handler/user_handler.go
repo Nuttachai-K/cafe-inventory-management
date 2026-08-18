@@ -27,15 +27,15 @@ func NewUserHandler(service service.UserService) *UserHandler {
 // @Security BearerAuth
 // @Param id path int true "User ID"
 // @Success 200 {object} model.User
-// @Failure 400 {string} string "invalid user id"
-// @Failure 404 {string} string "data not found"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid user id"
+// @Failure 404 {object} model.ErrorResponse "data not found"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/users/{id} [get]
 func (h *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(
+		writeJSONError(
 			w,
 			"Invalid user id",
 			http.StatusBadRequest,
@@ -63,15 +63,15 @@ func (h *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Param limit query int false "Max results to return (default 20)"
 // @Success 200 {array} model.User
-// @Failure 400 {string} string "invalid limit"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid limit"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/users [get]
 func (h *UserHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	limit := 20
 	if l := r.URL.Query().Get("limit"); l != "" {
 		parsed, err := strconv.Atoi(l)
 		if err != nil {
-			http.Error(w, "invalid limit", http.StatusBadRequest)
+			writeJSONError(w, "invalid limit", http.StatusBadRequest)
 			return
 		}
 		limit = parsed
@@ -99,15 +99,15 @@ func (h *UserHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Param user body model.UserCreate true "User payload"
 // @Success 201 {object} object{id=int,message=string}
-// @Failure 400 {string} string "invalid request body"
-// @Failure 409 {string} string "email is already used"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid request body"
+// @Failure 409 {object} model.ErrorResponse "email is already used"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/users [post]
 func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var user model.User
 
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		writeJSONError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
@@ -138,21 +138,21 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 // @Param id path int true "User ID"
 // @Param user body model.UserUpdate true "User payload"
 // @Success 200 {object} model.User
-// @Failure 400 {string} string "invalid request body or invalid user id"
-// @Failure 409 {string} string "email is already used"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid request body or invalid user id"
+// @Failure 409 {object} model.ErrorResponse "email is already used"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/users/{id} [patch]
 func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
-		http.Error(w, "invalid id", http.StatusBadRequest)
+		writeJSONError(w, "invalid id", http.StatusBadRequest)
 		return
 	}
 
 	var req model.UserUpdate
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		writeJSONError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
@@ -177,15 +177,15 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Param id path int true "User ID"
 // @Success 204
-// @Failure 400 {string} string "invalid user id"
-// @Failure 404 {string} string "data not found"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid user id"
+// @Failure 404 {object} model.ErrorResponse "data not found"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/users/{id} [delete]
 func (h *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
-		http.Error(w, "invalid id", http.StatusBadRequest)
+		writeJSONError(w, "invalid id", http.StatusBadRequest)
 		return
 	}
 

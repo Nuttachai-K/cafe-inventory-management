@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 
@@ -11,30 +12,36 @@ func writeError(w http.ResponseWriter, err error) {
 
 	switch {
 	case errors.Is(err, service.ErrInvalidInput):
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		writeJSONError(w, err.Error(), http.StatusBadRequest)
 
 	case errors.Is(err, service.ErrDataNotFound):
-		http.Error(w, err.Error(), http.StatusNotFound)
+		writeJSONError(w, err.Error(), http.StatusNotFound)
 
 	case errors.Is(err, service.ErrDuplicateEmail):
-		http.Error(w, err.Error(), http.StatusConflict)
+		writeJSONError(w, err.Error(), http.StatusConflict)
 
 	case errors.Is(err, service.ErrDuplicateCategory):
-		http.Error(w, err.Error(), http.StatusConflict)
+		writeJSONError(w, err.Error(), http.StatusConflict)
 
 	case errors.Is(err, service.ErrInvalidCredentials):
-		http.Error(w, err.Error(), http.StatusUnauthorized)
+		writeJSONError(w, err.Error(), http.StatusUnauthorized)
 
 	case errors.Is(err, service.ErrInsufficientStock):
-		http.Error(w, err.Error(), http.StatusConflict)
+		writeJSONError(w, err.Error(), http.StatusConflict)
 
 	case errors.Is(err, service.ErrHasDependents):
-		http.Error(w, err.Error(), http.StatusConflict)
+		writeJSONError(w, err.Error(), http.StatusConflict)
 
 	case errors.Is(err, service.ErrUserInactive):
-		http.Error(w, err.Error(), http.StatusUnauthorized)
+		writeJSONError(w, err.Error(), http.StatusUnauthorized)
 
 	default:
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		writeJSONError(w, "internal server error", http.StatusInternalServerError)
 	}
+}
+
+func writeJSONError(w http.ResponseWriter, message string, status int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(map[string]string{"error": message})
 }

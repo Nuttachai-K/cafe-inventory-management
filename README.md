@@ -70,14 +70,12 @@ This API addresses those challenges by providing centralized management, role-ba
 
 - Store cafe coordinates (latitude/longitude)
 - Search cafes by nearest station
+- Distance-based search from a customer's coordinates (Haversine formula), with optional radius filter
 - Limit result count
 
 ## Future Features
 
-- Inventory tracking (stock levels, movement history, audit trail)
-- Distance-based cafe search (Haversine formula)
-- Customer-facing cafe search
-- Product availability search
+- Product availability search (find nearby cafes with a specific product in stock)
 - Google Maps API integration
 - Branch performance dashboard
 - Sales analytics
@@ -97,7 +95,7 @@ This API addresses those challenges by providing centralized management, role-ba
 | Container | Docker |
 | Architecture | Layered Architecture |
 | API Style | RESTful API |
-| Infrastructure | 	AWS EC2 |
+| Infrastructure | AWS ECS |
 | Version Control | Git & GitHub |
 
 ---
@@ -245,9 +243,10 @@ inventory_logs
 
 | Method | Endpoint |
 |---------|----------|
-| GET | /api/v1/inventory/{productId} |
-| PATCH | /api/v1/inventory/{productId} |
-| GET | /api/v1/inventory/{productId}/logs |
+| GET | /api/v1/inventory |
+| GET | /api/v1/inventory/{id} |
+| PATCH | /api/v1/inventory/{id} |
+| GET | /api/v1/inventory/logs |
 
 ---
 
@@ -275,6 +274,149 @@ Authorization: Bearer <JWT Token>
 
 ---
 
+# How to Use
+
+## Prerequisites
+
+- Docker & Docker Compose
+- Go 1.26+ (only needed if running the API outside a container)
+
+## 1. Configure environment
+
+Create a `.env` file in the project root:
+
+```env
+POSTGRES_USER=cafe
+POSTGRES_PASSWORD=cafe
+POSTGRES_DB=cafe_inventory
+POSTGRES_PORT=5432
+
+DATABASE_URL=postgres://cafe:cafe@localhost:5432/cafe_inventory?sslmode=disable
+
+JWT_SECRET=<a long random string>
+```
+
+## 2. Start the database and run migrations
+
+```bash
+docker-compose up -d
+```
+
+This starts PostgreSQL and runs all migrations, including a seeded admin user (`admin@cafe.local`).
+
+## 3. Start the API server
+
+```bash
+go run cmd/server/main.go
+```
+
+The API is now available at `http://localhost:8080`.
+
+## 4. Walkthrough: login → create data → adjust stock → view history
+
+**Login as the seeded admin:**
+
+```bash
+curl -X POST http://localhost:8080/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@cafe.local","password":"admin123"}'
+```
+
+```json
+{ "token": "<jwt>" }
+```
+
+Save the token — every write below requires `Authorization: Bearer <jwt>`.
+
+**Create a category:**
+
+```bash
+curl -X POST http://localhost:8080/api/v1/categories \
+  -H "Authorization: Bearer <jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Coffee"}'
+```
+
+```json
+{ "id": 1, "message": "Category created successfully" }
+```
+
+**Create a cafe:**
+
+```bash
+curl -X POST http://localhost:8080/api/v1/cafes \
+  -H "Authorization: Bearer <jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "ABC Coffee Shinjuku",
+    "address": "1-1-1 Shinjuku, Tokyo",
+    "latitude": 35.6895,
+    "longitude": 139.6917,
+    "nearest_station": "Shinjuku",
+    "opening_time": "07:00",
+    "closing_time": "22:00"
+  }'
+```
+
+```json
+{ "id": 1, "message": "Cafe created successfully" }
+```
+
+**Create a product** (this also auto-creates its inventory row with `stock_quantity: 0`):
+
+```bash
+curl -X POST http://localhost:8080/api/v1/products \
+  -H "Authorization: Bearer <jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cafe_id": 1,
+    "category_id": 1,
+    "name": "Blend Coffee",
+    "description": "House blend, medium roast",
+    "price": "350.00"
+  }'
+```
+
+```json
+{ "id": 1, "message": "Product created successfully" }
+```
+
+**Add stock** (`operation` is `IN`, `OUT`, or `ADJUST`; the `{id}` here is the product's id):
+
+```bash
+curl -X PATCH http://localhost:8080/api/v1/inventory/1 \
+  -H "Authorization: Bearer <jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{"operation":"IN","change_quantity":50}'
+```
+
+```json
+{ "message": "Inventory updated successfully", "stock_quantity": 50 }
+```
+
+**View current stock:**
+
+```bash
+curl http://localhost:8080/api/v1/inventory
+```
+
+**View the movement history:**
+
+```bash
+curl http://localhost:8080/api/v1/inventory/logs \
+  -H "Authorization: Bearer <jwt>"
+```
+
+## 5. Browse the full API reference (Swagger UI)
+
+```
+http://localhost:8080/swagger/index.html
+```
+
+Click **Authorize** and paste `Bearer <jwt>` from step 4 to try protected endpoints directly from the browser. Alternatively, the raw spec is available at `docs/swagger.json` / `docs/swagger.yaml`.
+
+---
+
 # User Roles
 
 ## Admin
@@ -297,15 +439,23 @@ The API supports:
 
 Currently implemented:
 
- - Search cafes by nearest station
+ - Search cafes by nearest station (partial, case-insensitive match)
+ - Distance-based search from customer coordinates (Haversine formula), sorted nearest-first, with an optional radius filter
  - Limit result count
 
-Example:
+Example (by station):
 
 ```http
 GET /api/v1/cafes?station=Shinjuku%20station&limit=10
 ```
-Distance-based search, category filtering, sorting, and page-based pagination are planned
+
+Example (by distance):
+
+```http
+GET /api/v1/cafes?lat=35.6895&lng=139.6917&radius=5&limit=10
+```
+
+Category filtering, sorting options beyond distance, and page-based pagination are planned.
 
 ---
 

@@ -26,15 +26,15 @@ func NewProductHandler(service service.ProductService) *ProductHandler {
 // @Produce json
 // @Param id path int true "Product ID"
 // @Success 200 {object} model.ProductWithCategory
-// @Failure 400 {string} string "invalid product id"
-// @Failure 404 {string} string "data not found"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid product id"
+// @Failure 404 {object} model.ErrorResponse "data not found"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/products/{id} [get]
 func (h *ProductHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(
+		writeJSONError(
 			w,
 			"Invalid product id",
 			http.StatusBadRequest,
@@ -61,8 +61,8 @@ func (h *ProductHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param limit query int false "Max results to return (default 20)"
 // @Success 200 {array} model.ProductWithCategory
-// @Failure 400 {string} string "invalid limit"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid limit"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/products [get]
 func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 
@@ -70,7 +70,7 @@ func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	if l := r.URL.Query().Get("limit"); l != "" {
 		parsed, err := strconv.Atoi(l)
 		if err != nil {
-			http.Error(w, "invalid limit", http.StatusBadRequest)
+			writeJSONError(w, "invalid limit", http.StatusBadRequest)
 			return
 		}
 		limit = parsed
@@ -98,17 +98,17 @@ func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Param product body model.ProductCreate true "Product payload"
 // @Success 201 {object} object{id=int,message=string}
-// @Failure 400 {string} string "invalid request body"
-// @Failure 401 {string} string "invalid or expired token"
-// @Failure 403 {string} string "permission denied"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid request body"
+// @Failure 401 {object} model.ErrorResponse "invalid or expired token"
+// @Failure 403 {object} model.ErrorResponse "permission denied"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/products [post]
 func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	var product model.Product
 
 	if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		writeJSONError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
@@ -139,25 +139,25 @@ func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
 // @Param id path int true "Product ID"
 // @Param product body model.ProductUpdate true "Product payload"
 // @Success 200 {object} model.ProductWithCategory
-// @Failure 400 {string} string "invalid request body or invalid product id"
-// @Failure 401 {string} string "invalid or expired token"
-// @Failure 403 {string} string "permission denied"
-// @Failure 404 {string} string "data not found"
-// @Failure 409 {string} string "referenced cafe_id or category_id does not exist"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid request body or invalid product id"
+// @Failure 401 {object} model.ErrorResponse "invalid or expired token"
+// @Failure 403 {object} model.ErrorResponse "permission denied"
+// @Failure 404 {object} model.ErrorResponse "data not found"
+// @Failure 409 {object} model.ErrorResponse "referenced cafe_id or category_id does not exist"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/products/{id} [patch]
 func (h *ProductHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
-		http.Error(w, "invalid id", http.StatusBadRequest)
+		writeJSONError(w, "invalid id", http.StatusBadRequest)
 		return
 	}
 
 	var req model.ProductUpdate
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		writeJSONError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
@@ -182,17 +182,17 @@ func (h *ProductHandler) Update(w http.ResponseWriter, r *http.Request) {
 // @Security BearerAuth
 // @Param id path int true "Product ID"
 // @Success 204
-// @Failure 400 {string} string "invalid product id"
-// @Failure 401 {string} string "invalid or expired token"
-// @Failure 403 {string} string "permission denied"
-// @Failure 404 {string} string "data not found"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid product id"
+// @Failure 401 {object} model.ErrorResponse "invalid or expired token"
+// @Failure 403 {object} model.ErrorResponse "permission denied"
+// @Failure 404 {object} model.ErrorResponse "data not found"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/products/{id} [delete]
 func (h *ProductHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
-		http.Error(w, "invalid id", http.StatusBadRequest)
+		writeJSONError(w, "invalid id", http.StatusBadRequest)
 		return
 	}
 
