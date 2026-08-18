@@ -184,7 +184,7 @@ func TestUserService_Update_PartialFields(t *testing.T) {
 
 	// Email and UserRole both nil — must not panic, must not error.
 	_, err := s.Update(context.Background(), 1, &model.UserUpdate{
-		Username: ptr("newname"),
+		Username: new("newname"),
 	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -231,5 +231,3 @@ func TestUserService_Delete(t *testing.T) {
 		})
 	}
 }
-
-func ptr[T any](v T) *T { return &v }
