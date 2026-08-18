@@ -3,6 +3,9 @@ package router
 import (
 	"net/http"
 
+	httpSwagger "github.com/swaggo/http-swagger"
+
+	_ "github.com/Nuttachai-K/cafe-inventory-management/docs"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/handler"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/middleware"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
@@ -45,6 +48,8 @@ func NewRouter(cafeHandler *handler.CafeHandler, userHandler *handler.UserHandle
 	mux.HandleFunc("GET /api/v1/inventory/logs", middleware.Authenticate(middleware.RequireRole(model.RoleAdmin)(inventoryLogHandler.GetLogs)))
 
 	mux.HandleFunc("POST /api/v1/auth/login", authenHandler.Login)
+
+	mux.Handle("GET /swagger/", httpSwagger.WrapHandler)
 
 	return mux
 }
