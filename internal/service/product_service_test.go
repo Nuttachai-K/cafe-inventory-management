@@ -165,7 +165,7 @@ func TestProductService_Create(t *testing.T) {
 	}
 }
 
-func TestProductService_Update_PartialFields(t *testing.T) {
+func TestProductService_Update(t *testing.T) {
 
 	tests := []struct {
 		name    string
