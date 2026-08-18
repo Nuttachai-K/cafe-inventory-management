@@ -165,21 +165,54 @@ func TestProductService_Create(t *testing.T) {
 	}
 }
 
-func TestProductService_Update_PartialFields(t *testing.T) {
+func TestProductService_Update(t *testing.T) {
 
-	repo := &mockProductRepo{
-		updateFn: func(ctx context.Context, id int, pu *model.ProductUpdate) (*model.ProductWithCategory, error) {
-			return &model.ProductWithCategory{
-				ID: id,
-			}, nil
+	tests := []struct {
+		name    string
+		id      int
+		pu      *model.ProductUpdate
+		wantErr error
+	}{
+		{
+			name:    "invalid product id",
+			id:      -1,
+			wantErr: ErrInvalidInput,
+		},
+		{
+			name:    "invalid cafe id",
+			pu:      &model.ProductUpdate{CafeId: new(-1), CategoryId: new(1)},
+			wantErr: ErrInvalidInput,
+		},
+		{
+			name:    "invalid category id",
+			pu:      &model.ProductUpdate{CafeId: new(1), CategoryId: new(-1)},
+			wantErr: ErrInvalidInput,
+		},
+		{
+			name:    "success",
+			pu:      &model.ProductUpdate{CafeId: new(1), CategoryId: new(1)},
+			wantErr: nil,
 		},
 	}
-	s := NewProductService(repo, nil)
-	_, err := s.Update(context.Background(), 1, &model.ProductUpdate{
-		Name: ptr("newname"),
-	})
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := &mockProductRepo{
+				updateFn: func(ctx context.Context, id int, pu *model.ProductUpdate) (*model.ProductWithCategory, error) {
+					return &model.ProductWithCategory{
+						ID: id,
+					}, nil
+				},
+			}
+			s := NewProductService(repo, nil)
+			_, err := s.Update(context.Background(), tt.id, tt.pu)
+			if err != nil && tt.wantErr == nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if tt.wantErr != nil && !errors.Is(err, tt.wantErr) {
+				t.Fatalf("got: %v, want error wrapping: %v", err, tt.wantErr)
+			}
+		})
 	}
 }
 

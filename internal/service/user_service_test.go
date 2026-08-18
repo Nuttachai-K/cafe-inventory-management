@@ -174,20 +174,56 @@ func TestUserService_Create(t *testing.T) {
 
 }
 
-func TestUserService_Update_PartialFields(t *testing.T) {
-	repo := &mockUserRepo{
-		updateFn: func(ctx context.Context, id int, uu *model.UserUpdate) (*model.User, error) {
-			return &model.User{ID: id}, nil
+func TestUserService_Update(t *testing.T) {
+
+	tests := []struct {
+		name    string
+		id      int
+		uu      *model.UserUpdate
+		wantErr error
+	}{
+		{
+			name:    "invalid id",
+			id:      -1,
+			wantErr: ErrInvalidInput,
+		},
+		{
+			name:    "invalid email address",
+			id:      1,
+			uu:      &model.UserUpdate{Email: new("not email")},
+			wantErr: ErrInvalidInput,
+		},
+		{
+			name:    "invalid user role",
+			id:      1,
+			uu:      &model.UserUpdate{UserRole: new(model.UserRole("Maid"))},
+			wantErr: ErrInvalidUserRole,
+		},
+		{
+			name: "success",
+			id:   1,
+			uu: &model.UserUpdate{
+				Username: new("newname"),
+			},
+			wantErr: nil,
 		},
 	}
-	s := NewUserService(repo)
 
-	// Email and UserRole both nil — must not panic, must not error.
-	_, err := s.Update(context.Background(), 1, &model.UserUpdate{
-		Username: ptr("newname"),
-	})
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
+	for _, tt := range tests {
+		repo := &mockUserRepo{
+			updateFn: func(ctx context.Context, id int, uu *model.UserUpdate) (*model.User, error) {
+				return &model.User{ID: id}, nil
+			},
+		}
+		s := NewUserService(repo)
+
+		_, err := s.Update(context.Background(), tt.id, tt.uu)
+		if err != nil && tt.wantErr == nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if tt.wantErr != nil && !errors.Is(err, tt.wantErr) {
+			t.Fatalf("got: %v, want wrapping error: %v", err, tt.wantErr)
+		}
 	}
 }
 
@@ -231,5 +267,3 @@ func TestUserService_Delete(t *testing.T) {
 		})
 	}
 }
-
-func ptr[T any](v T) *T { return &v }
