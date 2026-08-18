@@ -53,19 +53,19 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid request body",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "invalid credential or inactive user",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -128,13 +128,13 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid query parameter",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -184,25 +184,25 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid request body",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "invalid or expired token",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "permission denied",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -239,19 +239,19 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid cafe id",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "data not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -288,37 +288,37 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid id",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "invalid or expired token",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "permission denied",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "data not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "409": {
                         "description": "cafe has dependent records",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -367,31 +367,31 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid request body or invalid cafe id",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "invalid or expired token",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "permission denied",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "data not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -430,13 +430,13 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid limit",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -491,31 +491,31 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid request body",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "invalid or expired token",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "permission denied",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "409": {
                         "description": "category name is already used",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -552,19 +552,19 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid category id",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "data not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -601,25 +601,25 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid category id",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "data not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "409": {
                         "description": "category has dependent records",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -673,37 +673,37 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid request body or invalid category id",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "invalid or expired token",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "permission denied",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "data not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "409": {
                         "description": "category name is already used",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -748,13 +748,13 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid limit",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -828,25 +828,25 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid query parameter or value",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "invalid or expired token",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "permission denied",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -883,19 +883,19 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid inventory id",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "data not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -952,37 +952,37 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid request body or invalid product id",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "invalid or expired token",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "permission denied",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "data not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "409": {
                         "description": "insufficient stock",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -1021,13 +1021,13 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid limit",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -1077,25 +1077,25 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid request body",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "invalid or expired token",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "permission denied",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -1132,19 +1132,19 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid product id",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "data not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -1181,37 +1181,31 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid product id",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "invalid or expired token",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "permission denied",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "data not found",
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "409": {
-                        "description": "product has dependent records",
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -1260,37 +1254,37 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid request body or invalid product id",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "invalid or expired token",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "permission denied",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "data not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "409": {
                         "description": "referenced cafe_id or category_id does not exist",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -1334,13 +1328,13 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid limit",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -1390,19 +1384,19 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid request body",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "409": {
                         "description": "email is already used",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -1444,19 +1438,19 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid user id",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "data not found",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -1493,25 +1487,19 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid user id",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "data not found",
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "409": {
-                        "description": "user has dependent records",
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -1560,19 +1548,19 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid request body or invalid user id",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "409": {
                         "description": "email is already used",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -1694,6 +1682,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
                     "type": "string"
                 }
             }
