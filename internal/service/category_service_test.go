@@ -155,20 +155,47 @@ func TestCategoryService_Create(t *testing.T) {
 	}
 }
 
-func TestCategoryService_Update_PartialFields(t *testing.T) {
+func TestCategoryService_Update(t *testing.T) {
 
-	repo := &mockCategoryRepo{
-		updateFn: func(ctx context.Context, id int, name string) (*model.Category, error) {
-			return &model.Category{
-				ID: id,
-			}, nil
+	tests := []struct {
+		name         string
+		id           int
+		categoryName string
+		wantErr      error
+	}{
+		{
+			name:    "invalid id",
+			id:      -4,
+			wantErr: ErrInvalidInput,
+		},
+		{
+			name:         "success",
+			id:           1,
+			categoryName: "New category",
+			wantErr:      nil,
 		},
 	}
-	s := NewCategoryService(repo)
-	_, err := s.Update(context.Background(), 1, "new name")
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := &mockCategoryRepo{
+				updateFn: func(ctx context.Context, id int, name string) (*model.Category, error) {
+					return &model.Category{
+						ID: id,
+					}, nil
+				},
+			}
+			s := NewCategoryService(repo)
+			_, err := s.Update(context.Background(), tt.id, tt.categoryName)
+			if err != nil && tt.wantErr == nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if tt.wantErr != nil && !errors.Is(err, tt.wantErr) {
+				t.Fatalf("got: %v, want error wrapping: %v", err, tt.wantErr)
+			}
+		})
 	}
+
 }
 
 func TestCategoryService_Delete(t *testing.T) {
