@@ -25,9 +25,9 @@ func NewAuthHandler(service service.AuthService) *AuthHandler {
 // @Produce json
 // @Param login body model.Authentication true "Login payload"
 // @Success 201 {object} object{token=string}
-// @Failure 400 {string} string "invalid request body"
-// @Failure 401 {string} string "invalid credential or inactive user"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid request body"
+// @Failure 401 {object} model.ErrorResponse "invalid credential or inactive user"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/auth/login [post]
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var auth model.Authentication

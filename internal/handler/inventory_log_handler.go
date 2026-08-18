@@ -33,10 +33,10 @@ func NewInventoryLogHandler(service service.InventoryLogService) *InventoryLogHa
 // @Param to query string false "End time"
 // @Param limit query int false "Max results to return (default 20)"
 // @Success 200 {array} model.InventoryLog
-// @Failure 400 {string} string "invalid query parameter or value"
-// @Failure 401 {string} string "invalid or expired token"
-// @Failure 403 {string} string "permission denied"
-// @Failure 500 {string} string "internal server error"
+// @Failure 400 {object} model.ErrorResponse "invalid query parameter or value"
+// @Failure 401 {object} model.ErrorResponse "invalid or expired token"
+// @Failure 403 {object} model.ErrorResponse "permission denied"
+// @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/inventory/logs [get]
 func (h *InventoryLogHandler) GetLogs(w http.ResponseWriter, r *http.Request) {
 
