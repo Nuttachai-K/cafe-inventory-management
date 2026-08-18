@@ -70,14 +70,12 @@
 
 - カフェの座標（緯度・経度）の保存
 - 最寄り駅によるカフェ検索
+- 顧客の座標からの距離ベース検索（Haversine公式）、半径による絞り込みに対応
 - 取得件数の制限
 
 ## 今後の機能
 
-- 在庫追跡（在庫数、変動履歴、監査証跡）
-- 距離ベースのカフェ検索（Haversine公式）
-- 顧客向けカフェ検索
-- 商品在庫検索
+- 商品在庫検索（特定の商品を在庫している近隣のカフェを検索）
 - Google Maps API連携
 - 店舗パフォーマンスダッシュボード
 - 売上分析
@@ -97,7 +95,7 @@
 | コンテナ | Docker |
 | アーキテクチャ | レイヤードアーキテクチャ |
 | APIスタイル | RESTful API |
-| インフラ | AWS EC2 |
+| インフラ | AWS ECS |
 | バージョン管理 | Git & GitHub |
 
 ---
@@ -244,9 +242,10 @@ inventory_logs
 
 | Method | Endpoint |
 |---------|----------|
-| GET | /api/v1/inventory/{productId} |
-| PATCH | /api/v1/inventory/{productId} |
-| GET | /api/v1/inventory/{productId}/logs |
+| GET | /api/v1/inventory |
+| GET | /api/v1/inventory/{id} |
+| PATCH | /api/v1/inventory/{id} |
+| GET | /api/v1/inventory/logs |
 
 ---
 
@@ -274,6 +273,149 @@ Authorization: Bearer <JWT Token>
 
 ---
 
+# 使い方
+
+## 前提条件
+
+- Docker & Docker Compose
+- Go 1.26以上（コンテナ外でAPIを実行する場合のみ必要）
+
+## 1. 環境変数を設定する
+
+プロジェクトルートに `.env` ファイルを作成します。
+
+```env
+POSTGRES_USER=cafe
+POSTGRES_PASSWORD=cafe
+POSTGRES_DB=cafe_inventory
+POSTGRES_PORT=5432
+
+DATABASE_URL=postgres://cafe:cafe@localhost:5432/cafe_inventory?sslmode=disable
+
+JWT_SECRET=<十分に長いランダムな文字列>
+```
+
+## 2. データベースを起動しマイグレーションを実行する
+
+```bash
+docker-compose up -d
+```
+
+これにより PostgreSQL が起動し、シードデータとして登録される管理者ユーザー（`admin@cafe.local`）を含む全マイグレーションが実行されます。
+
+## 3. APIサーバーを起動する
+
+```bash
+go run cmd/server/main.go
+```
+
+これでAPIは `http://localhost:8080` で利用可能になります。
+
+## 4. 一連の流れ：ログイン → データ作成 → 在庫更新 → 履歴確認
+
+**シードされた管理者としてログイン:**
+
+```bash
+curl -X POST http://localhost:8080/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@cafe.local","password":"admin123"}'
+```
+
+```json
+{ "token": "<jwt>" }
+```
+
+このトークンを保存してください。以降の書き込み操作にはすべて `Authorization: Bearer <jwt>` が必要です。
+
+**カテゴリを作成:**
+
+```bash
+curl -X POST http://localhost:8080/api/v1/categories \
+  -H "Authorization: Bearer <jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Coffee"}'
+```
+
+```json
+{ "id": 1, "message": "Category created successfully" }
+```
+
+**カフェを作成:**
+
+```bash
+curl -X POST http://localhost:8080/api/v1/cafes \
+  -H "Authorization: Bearer <jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "ABC Coffee Shinjuku",
+    "address": "1-1-1 Shinjuku, Tokyo",
+    "latitude": 35.6895,
+    "longitude": 139.6917,
+    "nearest_station": "Shinjuku",
+    "opening_time": "07:00",
+    "closing_time": "22:00"
+  }'
+```
+
+```json
+{ "id": 1, "message": "Cafe created successfully" }
+```
+
+**商品を作成**（このとき `stock_quantity: 0` の在庫レコードも自動的に作成されます）:
+
+```bash
+curl -X POST http://localhost:8080/api/v1/products \
+  -H "Authorization: Bearer <jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cafe_id": 1,
+    "category_id": 1,
+    "name": "Blend Coffee",
+    "description": "House blend, medium roast",
+    "price": "350.00"
+  }'
+```
+
+```json
+{ "id": 1, "message": "Product created successfully" }
+```
+
+**在庫を追加**（`operation` は `IN`、`OUT`、`ADJUST` のいずれか。ここでの `{id}` は商品のidを指します）:
+
+```bash
+curl -X PATCH http://localhost:8080/api/v1/inventory/1 \
+  -H "Authorization: Bearer <jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{"operation":"IN","change_quantity":50}'
+```
+
+```json
+{ "message": "Inventory updated successfully", "stock_quantity": 50 }
+```
+
+**現在の在庫を確認:**
+
+```bash
+curl http://localhost:8080/api/v1/inventory
+```
+
+**在庫変動履歴を確認:**
+
+```bash
+curl http://localhost:8080/api/v1/inventory/logs \
+  -H "Authorization: Bearer <jwt>"
+```
+
+## 5. APIの全体像を確認する（Swagger UI）
+
+```
+http://localhost:8080/swagger/index.html
+```
+
+**Authorize** をクリックし、手順4で取得した `Bearer <jwt>` を貼り付けることで、保護されたエンドポイントもブラウザから直接試すことができます。なお、生のスペックファイルは `docs/swagger.json` / `docs/swagger.yaml` からも参照できます。
+
+---
+
 # ユーザーロール
 
 ## Admin
@@ -296,15 +438,23 @@ Authorization: Bearer <JWT Token>
 
 現在実装済み:
 
- - 最寄り駅によるカフェ検索
+ - 最寄り駅によるカフェ検索（部分一致・大文字小文字を区別しない）
+ - 顧客の座標からの距離ベース検索（Haversine公式）、近い順にソート、半径による絞り込みに対応
  - 取得件数の制限
 
-例:
+例（駅名による検索）:
 
 ```http
 GET /api/v1/cafes?station=Shinjuku%20station&limit=10
 ```
-距離ベースの検索、カテゴリによる絞り込み、並べ替え、ページ単位のページネーションは今後実装予定です。
+
+例（距離による検索）:
+
+```http
+GET /api/v1/cafes?lat=35.6895&lng=139.6917&radius=5&limit=10
+```
+
+カテゴリによる絞り込み、距離以外の並べ替え、ページ単位のページネーションは今後実装予定です。
 
 ---
 
