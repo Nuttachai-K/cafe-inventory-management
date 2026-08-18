@@ -34,7 +34,7 @@ func (h *ProductHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(
+		writeJSONError(
 			w,
 			"Invalid product id",
 			http.StatusBadRequest,
@@ -70,7 +70,7 @@ func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	if l := r.URL.Query().Get("limit"); l != "" {
 		parsed, err := strconv.Atoi(l)
 		if err != nil {
-			http.Error(w, "invalid limit", http.StatusBadRequest)
+			writeJSONError(w, "invalid limit", http.StatusBadRequest)
 			return
 		}
 		limit = parsed
@@ -108,7 +108,7 @@ func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var product model.Product
 
 	if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		writeJSONError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
@@ -150,14 +150,14 @@ func (h *ProductHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
-		http.Error(w, "invalid id", http.StatusBadRequest)
+		writeJSONError(w, "invalid id", http.StatusBadRequest)
 		return
 	}
 
 	var req model.ProductUpdate
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		writeJSONError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
@@ -192,7 +192,7 @@ func (h *ProductHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
-		http.Error(w, "invalid id", http.StatusBadRequest)
+		writeJSONError(w, "invalid id", http.StatusBadRequest)
 		return
 	}
 

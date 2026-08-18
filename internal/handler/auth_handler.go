@@ -33,7 +33,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var auth model.Authentication
 
 	if err := json.NewDecoder(r.Body).Decode(&auth); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		writeJSONError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 

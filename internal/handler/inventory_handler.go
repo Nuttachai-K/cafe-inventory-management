@@ -36,7 +36,7 @@ func (h *InventoryHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(
+		writeJSONError(
 			w,
 			"Invalid product id",
 			http.StatusBadRequest,
@@ -75,7 +75,7 @@ func (h *InventoryHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	if l := r.URL.Query().Get("limit"); l != "" {
 		parsed, err := strconv.Atoi(l)
 		if err != nil {
-			http.Error(w, "invalid limit", http.StatusBadRequest)
+			writeJSONError(w, "invalid limit", http.StatusBadRequest)
 			return
 		}
 		limit = parsed
@@ -117,19 +117,19 @@ func (h *InventoryHandler) UpdateStock(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	productId, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "invalid product id", http.StatusBadRequest)
+		writeJSONError(w, "invalid product id", http.StatusBadRequest)
 		return
 	}
 
 	var req model.InventoryUpdateRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		writeJSONError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
 	claims, ok := middleware.GetClaims(r.Context())
 	if !ok {
-		http.Error(w, "invalid or expired token", http.StatusUnauthorized)
+		writeJSONError(w, "invalid or expired token", http.StatusUnauthorized)
 		return
 	}
 
