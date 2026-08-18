@@ -197,7 +197,7 @@ func TestUserService_Update(t *testing.T) {
 			name:    "invalid user role",
 			id:      1,
 			uu:      &model.UserUpdate{UserRole: new(model.UserRole("Maid"))},
-			wantErr: ErrInvalidInput,
+			wantErr: ErrInvalidUserRole,
 		},
 		{
 			name: "success",
