@@ -216,6 +216,14 @@ func TestCategoryService_Delete(t *testing.T) {
 			wantErr: ErrDataNotFound,
 		},
 		{
+			name: "has dependent",
+			id:   99,
+			deleteFn: func(ctx context.Context, id int) error {
+				return &pgconn.PgError{Code: "23503"}
+			},
+			wantErr: ErrHasDependents,
+		},
+		{
 			name: "success",
 			id:   1,
 			deleteFn: func(ctx context.Context, id int) error {
