@@ -36,7 +36,7 @@ func (s *categoryService) GetByID(ctx context.Context, id int) (*model.Category,
 
 	category, err := s.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("%w: product", translateErr(err))
+		return nil, fmt.Errorf("%w: category", translateErr(err))
 	}
 	return category, nil
 }
@@ -73,7 +73,11 @@ func (s *categoryService) Update(ctx context.Context, id int, name string) (*mod
 
 	category, err := s.repo.Update(ctx, id, name)
 	if err != nil {
-		return nil, fmt.Errorf("%w: product", translateErr(err))
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return nil, fmt.Errorf("%w: %s", ErrDuplicateCategory, name)
+		}
+		return nil, fmt.Errorf("%w: category", translateErr(err))
 	}
 	return category, nil
 }
