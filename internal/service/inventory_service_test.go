@@ -143,3 +143,28 @@ func TestInventoryService_Update_Stock(t *testing.T) {
 		})
 	}
 }
+
+func TestResolveStockChange(t *testing.T) {
+	tests := []struct {
+		name         string
+		op           model.Operation
+		quantity     int
+		wantChange   int
+		wantIsAdjust bool
+	}{
+		{name: "IN adds", op: model.InOperation, quantity: 5, wantChange: 5, wantIsAdjust: false},
+		{name: "OUT subtracts", op: model.OutOperation, quantity: 5, wantChange: -5, wantIsAdjust: false},
+		{name: "ADJUST uses raw value", op: model.AdjustOperation, quantity: 12, wantChange: 12, wantIsAdjust: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotChange, gotIsAdjust, err := resolveStockChange(tt.op, tt.quantity)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if gotChange != tt.wantChange || gotIsAdjust != tt.wantIsAdjust {
+				t.Errorf("got (%d, %v), want (%d, %v)", gotChange, gotIsAdjust, tt.wantChange, tt.wantIsAdjust)
+			}
+		})
+	}
+}
