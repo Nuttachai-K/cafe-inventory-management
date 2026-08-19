@@ -50,6 +50,7 @@ func NewRouter(cafeHandler *handler.CafeHandler, userHandler *handler.UserHandle
 	mux.HandleFunc("POST /api/v1/auth/login", authenHandler.Login)
 
 	mux.Handle("GET /swagger/", httpSwagger.WrapHandler)
+	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusOK) })
 
 	return mux
 }
