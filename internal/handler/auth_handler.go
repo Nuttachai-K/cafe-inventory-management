@@ -6,6 +6,7 @@ import (
 
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/service"
+	"github.com/Nuttachai-K/cafe-inventory-management/internal/utils"
 )
 
 type AuthHandler struct {
@@ -33,7 +34,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var auth model.Authentication
 
 	if err := json.NewDecoder(r.Body).Decode(&auth); err != nil {
-		writeJSONError(w, "invalid request body", http.StatusBadRequest)
+		utils.WriteJSONError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 

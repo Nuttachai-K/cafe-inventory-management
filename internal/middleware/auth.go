@@ -20,13 +20,13 @@ func Authenticate(next http.HandlerFunc) http.HandlerFunc {
 
 		const prefix = "Bearer "
 		if !strings.HasPrefix(authHeader, prefix) {
-			http.Error(w, "invalid or expired token", http.StatusUnauthorized)
+			utils.WriteJSONError(w, "invalid or expired token", http.StatusUnauthorized)
 			return
 		}
 
 		claims, err := utils.ParseToken(strings.TrimPrefix(authHeader, prefix))
 		if err != nil {
-			http.Error(w, "invalid or expired token", http.StatusUnauthorized)
+			utils.WriteJSONError(w, "invalid or expired token", http.StatusUnauthorized)
 			return
 		}
 
@@ -45,7 +45,7 @@ func RequireRole(roles ...model.UserRole) func(http.HandlerFunc) http.HandlerFun
 		return func(w http.ResponseWriter, r *http.Request) {
 			claims, ok := GetClaims(r.Context())
 			if !ok {
-				http.Error(w, "invalid or expired token", http.StatusUnauthorized)
+				utils.WriteJSONError(w, "invalid or expired token", http.StatusUnauthorized)
 				return
 			}
 
@@ -53,7 +53,7 @@ func RequireRole(roles ...model.UserRole) func(http.HandlerFunc) http.HandlerFun
 				next(w, r)
 				return
 			}
-			http.Error(w, "permission denied", http.StatusForbidden)
+			utils.WriteJSONError(w, "permission denied", http.StatusForbidden)
 		}
 	}
 }
