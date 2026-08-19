@@ -110,3 +110,16 @@ func TestCheckJWTSecret(t *testing.T) {
 		})
 	}
 }
+
+func TestParseToken_WrongSecret(t *testing.T) {
+	t.Setenv("JWT_SECRET", testSecret)
+	tokenString, err := GenerateToken(1, "ADMIN")
+	if err != nil {
+		t.Fatalf("GenerateToken() error = %v", err)
+	}
+
+	t.Setenv("JWT_SECRET", strings.Repeat("b", 32))
+	if _, err := ParseToken(tokenString); err == nil {
+		t.Fatal("expected error for token signed with a different secret, got nil")
+	}
+}
