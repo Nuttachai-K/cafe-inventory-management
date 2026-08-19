@@ -74,18 +74,9 @@ func (s *inventoryService) UpdateStock(ctx context.Context, id int, log *model.I
 	}
 	log.Operation = string(op)
 
-	var changeValue int
-	isAdjust := false
-	switch op {
-	case model.InOperation:
-		changeValue = log.ChangeQuantity
-	case model.OutOperation:
-		changeValue = -log.ChangeQuantity
-	case model.AdjustOperation:
-		changeValue = log.ChangeQuantity
-		isAdjust = true
-	default:
-		return 0, fmt.Errorf("%w: operation must be IN, OUT, or ADJUST", ErrInvalidInput)
+	changeValue, isAdjust, err := resolveStockChange(op, log.ChangeQuantity)
+	if err != nil {
+		return 0, err
 	}
 
 	tx, err := s.pool.Begin(ctx)
@@ -109,4 +100,18 @@ func (s *inventoryService) UpdateStock(ctx context.Context, id int, log *model.I
 	}
 
 	return stockQuantity, tx.Commit(ctx)
+}
+
+func resolveStockChange(op model.Operation, quantity int) (changeValue int, isAdjust bool, err error) {
+
+	switch op {
+	case model.InOperation:
+		return quantity, false, nil
+	case model.OutOperation:
+		return -quantity, false, nil
+	case model.AdjustOperation:
+		return quantity, true, nil
+	default:
+		return 0, false, fmt.Errorf("%w: operation must be IN, OUT, or ADJUST", ErrInvalidInput)
+	}
 }
