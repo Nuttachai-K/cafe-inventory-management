@@ -103,6 +103,10 @@ This API addresses those challenges by providing centralized management, role-ba
 # Project Structure
 
 ```text
+.github/
+└── workflows/
+    └── ci.yml
+
 cmd/
 └── server/
     └── main.go
@@ -119,6 +123,7 @@ internal/
 
 migrations/
 
+Dockerfile
 docker-compose.yml
 go.mod
 go.sum
@@ -479,6 +484,7 @@ This project demonstrates knowledge of:
 - Unit Testing
 - Integration Testing
 - Swagger / OpenAPI Documentation
+- GitHub Actions CI/CD
 
 ---
 
@@ -486,7 +492,6 @@ This project demonstrates knowledge of:
 
 - Google Maps API integration
 - Refresh Token Authentication
-- GitHub Actions CI/CD
 - Product Image Upload
 - Redis Caching
 - Headquarters Dashboard

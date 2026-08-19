@@ -103,6 +103,10 @@
 # プロジェクト構成
 
 ```text
+.github/
+└── workflows/
+    └── ci.yml
+
 cmd/
 └── server/
     └── main.go
@@ -119,6 +123,7 @@ internal/
 
 migrations/
 
+Dockerfile
 docker-compose.yml
 go.mod
 go.sum
@@ -478,6 +483,7 @@ GET /api/v1/cafes?lat=35.6895&lng=139.6917&radius=5&limit=10
 - 単体テスト
 - 結合テスト
 - Swagger / OpenAPI ドキュメント
+- GitHub Actions CI/CD
 
 ---
 
@@ -485,7 +491,6 @@ GET /api/v1/cafes?lat=35.6895&lng=139.6917&radius=5&limit=10
 
 - Google Maps API連携
 - リフレッシュトークン認証
-- GitHub Actions CI/CD
 - 商品画像アップロード
 - Redisキャッシュ
 - 本部ダッシュボード

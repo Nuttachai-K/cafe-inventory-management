@@ -28,7 +28,7 @@ func main() {
 	// Load enviorment data
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("no .env file found, reading configuration from the environment")
 	}
 
 	err = utils.CheckJWTSecret()
