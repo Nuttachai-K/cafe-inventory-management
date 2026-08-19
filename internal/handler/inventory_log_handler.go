@@ -8,6 +8,7 @@ import (
 
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/service"
+	"github.com/Nuttachai-K/cafe-inventory-management/internal/utils"
 )
 
 type InventoryLogHandler struct {
@@ -45,7 +46,7 @@ func (h *InventoryLogHandler) GetLogs(w http.ResponseWriter, r *http.Request) {
 	if v := r.URL.Query().Get("inventory_id"); v != "" {
 		id, err := strconv.Atoi(v)
 		if err != nil {
-			writeJSONError(
+			utils.WriteJSONError(
 				w,
 				"Invalid inventory id",
 				http.StatusBadRequest,
@@ -58,7 +59,7 @@ func (h *InventoryLogHandler) GetLogs(w http.ResponseWriter, r *http.Request) {
 	if v := r.URL.Query().Get("user_id"); v != "" {
 		id, err := strconv.Atoi(v)
 		if err != nil {
-			writeJSONError(
+			utils.WriteJSONError(
 				w,
 				"Invalid user id",
 				http.StatusBadRequest,
@@ -75,7 +76,7 @@ func (h *InventoryLogHandler) GetLogs(w http.ResponseWriter, r *http.Request) {
 	if v := r.URL.Query().Get("from"); v != "" {
 		from, err := time.Parse(time.DateOnly, v) // "2006-01-02"
 		if err != nil {
-			writeJSONError(w, "invalid from date", http.StatusBadRequest)
+			utils.WriteJSONError(w, "invalid from date", http.StatusBadRequest)
 			return
 		}
 		filter.From = &from
@@ -84,7 +85,7 @@ func (h *InventoryLogHandler) GetLogs(w http.ResponseWriter, r *http.Request) {
 	if v := r.URL.Query().Get("to"); v != "" {
 		to, err := time.Parse(time.DateOnly, v)
 		if err != nil {
-			writeJSONError(w, "invalid to date", http.StatusBadRequest)
+			utils.WriteJSONError(w, "invalid to date", http.StatusBadRequest)
 			return
 		}
 		filter.To = &to
@@ -94,7 +95,7 @@ func (h *InventoryLogHandler) GetLogs(w http.ResponseWriter, r *http.Request) {
 	if l := r.URL.Query().Get("limit"); l != "" {
 		parsed, err := strconv.Atoi(l)
 		if err != nil {
-			writeJSONError(w, "invalid limit", http.StatusBadRequest)
+			utils.WriteJSONError(w, "invalid limit", http.StatusBadRequest)
 			return
 		}
 		limit = parsed

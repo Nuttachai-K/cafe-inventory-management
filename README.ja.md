@@ -477,6 +477,7 @@ GET /api/v1/cafes?lat=35.6895&lng=139.6917&radius=5&limit=10
 - コンテナ化
 - 単体テスト
 - 結合テスト
+- Swagger / OpenAPI ドキュメント
 
 ---
 
@@ -485,7 +486,6 @@ GET /api/v1/cafes?lat=35.6895&lng=139.6917&radius=5&limit=10
 - Google Maps API連携
 - リフレッシュトークン認証
 - GitHub Actions CI/CD
-- Swagger / OpenAPI ドキュメント
 - 商品画像アップロード
 - Redisキャッシュ
 - 本部ダッシュボード

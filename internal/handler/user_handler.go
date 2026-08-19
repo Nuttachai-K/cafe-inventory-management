@@ -7,6 +7,7 @@ import (
 
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/service"
+	"github.com/Nuttachai-K/cafe-inventory-management/internal/utils"
 )
 
 type UserHandler struct {
@@ -35,7 +36,7 @@ func (h *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		writeJSONError(
+		utils.WriteJSONError(
 			w,
 			"Invalid user id",
 			http.StatusBadRequest,
@@ -71,7 +72,7 @@ func (h *UserHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	if l := r.URL.Query().Get("limit"); l != "" {
 		parsed, err := strconv.Atoi(l)
 		if err != nil {
-			writeJSONError(w, "invalid limit", http.StatusBadRequest)
+			utils.WriteJSONError(w, "invalid limit", http.StatusBadRequest)
 			return
 		}
 		limit = parsed
@@ -107,7 +108,7 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var user model.User
 
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		writeJSONError(w, "invalid request body", http.StatusBadRequest)
+		utils.WriteJSONError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
@@ -145,14 +146,14 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
-		writeJSONError(w, "invalid id", http.StatusBadRequest)
+		utils.WriteJSONError(w, "invalid id", http.StatusBadRequest)
 		return
 	}
 
 	var req model.UserUpdate
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeJSONError(w, "invalid request body", http.StatusBadRequest)
+		utils.WriteJSONError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
@@ -185,7 +186,7 @@ func (h *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
-		writeJSONError(w, "invalid id", http.StatusBadRequest)
+		utils.WriteJSONError(w, "invalid id", http.StatusBadRequest)
 		return
 	}
 

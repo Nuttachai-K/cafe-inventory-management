@@ -8,6 +8,7 @@ import (
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/middleware"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/service"
+	"github.com/Nuttachai-K/cafe-inventory-management/internal/utils"
 )
 
 type InventoryHandler struct {
@@ -36,7 +37,7 @@ func (h *InventoryHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		writeJSONError(
+		utils.WriteJSONError(
 			w,
 			"Invalid product id",
 			http.StatusBadRequest,
@@ -75,7 +76,7 @@ func (h *InventoryHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	if l := r.URL.Query().Get("limit"); l != "" {
 		parsed, err := strconv.Atoi(l)
 		if err != nil {
-			writeJSONError(w, "invalid limit", http.StatusBadRequest)
+			utils.WriteJSONError(w, "invalid limit", http.StatusBadRequest)
 			return
 		}
 		limit = parsed
@@ -117,19 +118,19 @@ func (h *InventoryHandler) UpdateStock(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	productId, err := strconv.Atoi(idStr)
 	if err != nil {
-		writeJSONError(w, "invalid product id", http.StatusBadRequest)
+		utils.WriteJSONError(w, "invalid product id", http.StatusBadRequest)
 		return
 	}
 
 	var req model.InventoryUpdateRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeJSONError(w, "invalid request body", http.StatusBadRequest)
+		utils.WriteJSONError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
 	claims, ok := middleware.GetClaims(r.Context())
 	if !ok {
-		writeJSONError(w, "invalid or expired token", http.StatusUnauthorized)
+		utils.WriteJSONError(w, "invalid or expired token", http.StatusUnauthorized)
 		return
 	}
 

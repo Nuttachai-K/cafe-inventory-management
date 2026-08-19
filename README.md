@@ -478,6 +478,7 @@ This project demonstrates knowledge of:
 - Containerization
 - Unit Testing
 - Integration Testing
+- Swagger / OpenAPI Documentation
 
 ---
 
@@ -486,7 +487,6 @@ This project demonstrates knowledge of:
 - Google Maps API integration
 - Refresh Token Authentication
 - GitHub Actions CI/CD
-- Swagger / OpenAPI Documentation
 - Product Image Upload
 - Redis Caching
 - Headquarters Dashboard
