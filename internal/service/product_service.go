@@ -11,7 +11,7 @@ import (
 
 type ProductService interface {
 	GetByID(ctx context.Context, id int) (*model.ProductWithCategory, error)
-	GetAll(ctx context.Context, limit int) ([]model.ProductWithCategory, error)
+	GetAll(ctx context.Context, productName string, limit int) ([]model.ProductWithCategory, error)
 	Create(ctx context.Context, user *model.Product) error
 	Update(ctx context.Context, id int, pu *model.ProductUpdate) (*model.ProductWithCategory, error)
 	Delete(ctx context.Context, id int) error
@@ -42,7 +42,7 @@ func (s *productService) GetByID(ctx context.Context, id int) (*model.ProductWit
 	return product, nil
 }
 
-func (s *productService) GetAll(ctx context.Context, limit int) ([]model.ProductWithCategory, error) {
+func (s *productService) GetAll(ctx context.Context, productName string, limit int) ([]model.ProductWithCategory, error) {
 
 	if limit <= 0 {
 		limit = 20
@@ -51,7 +51,7 @@ func (s *productService) GetAll(ctx context.Context, limit int) ([]model.Product
 		limit = 100
 	}
 
-	products, err := s.repo.GetAll(ctx, limit)
+	products, err := s.repo.GetAll(ctx, productName, limit)
 	if err != nil {
 		return nil, fmt.Errorf("%w: products", translateErr(err))
 	}

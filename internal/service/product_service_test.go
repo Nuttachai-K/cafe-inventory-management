@@ -12,7 +12,7 @@ import (
 
 type mockProductRepo struct {
 	getByIDFn func(ctx context.Context, id int) (*model.ProductWithCategory, error)
-	getAllFn  func(ctx context.Context, limit int) ([]model.ProductWithCategory, error)
+	getAllFn  func(ctx context.Context, productName string, limit int) ([]model.ProductWithCategory, error)
 	createFn  func(ctx context.Context, user *model.Product) error
 	updateFn  func(ctx context.Context, id int, pu *model.ProductUpdate) (*model.ProductWithCategory, error)
 	deleteFn  func(ctx context.Context, id int) error
@@ -21,8 +21,8 @@ type mockProductRepo struct {
 func (m *mockProductRepo) GetByID(ctx context.Context, id int) (*model.ProductWithCategory, error) {
 	return m.getByIDFn(ctx, id)
 }
-func (m *mockProductRepo) GetAll(ctx context.Context, limit int) ([]model.ProductWithCategory, error) {
-	return m.getAllFn(ctx, limit)
+func (m *mockProductRepo) GetAll(ctx context.Context, productName string, limit int) ([]model.ProductWithCategory, error) {
+	return m.getAllFn(ctx, productName, limit)
 }
 func (m *mockProductRepo) Create(ctx context.Context, user *model.Product) error {
 	return m.createFn(ctx, user)
@@ -102,14 +102,14 @@ func TestProductService_GetAll(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var gotLimit int
 			repo := &mockProductRepo{
-				getAllFn: func(ctx context.Context, limit int) ([]model.ProductWithCategory, error) {
+				getAllFn: func(ctx context.Context, productName string, limit int) ([]model.ProductWithCategory, error) {
 					gotLimit = limit
 					return nil, nil
 				},
 			}
 			s := NewProductService(repo, nil)
 
-			if _, err := s.GetAll(context.Background(), tt.input); err != nil {
+			if _, err := s.GetAll(context.Background(), " ", tt.input); err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
 
