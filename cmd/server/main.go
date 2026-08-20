@@ -49,8 +49,10 @@ func main() {
 	}
 	defer db.Close()
 
-	docs.SwaggerInfo.Host = os.Getenv("SWAGGER_HOST")
-	docs.SwaggerInfo.Schemes = []string{"http"}
+	if host := os.Getenv("SWAGGER_HOST"); host != "" {
+		docs.SwaggerInfo.Host = host
+		docs.SwaggerInfo.Schemes = []string{"http"}
+	}
 
 	cafeRepo := repository.NewCafeRepository(db)
 	cafeService := service.NewCafeService(cafeRepo)
