@@ -11,11 +11,14 @@ import (
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
 )
 
-func NewRouter(cafeHandler *handler.CafeHandler, userHandler *handler.UserHandler, authenHandler *handler.AuthHandler,
+func NewRouter(serverHandler *handler.ServerHandler, cafeHandler *handler.CafeHandler, userHandler *handler.UserHandler, authenHandler *handler.AuthHandler,
 	productHandler *handler.ProductHandler, categoryHandler *handler.CategoryHandler, inventoryHandler *handler.InventoryHandler,
 	inventoryLogHandler *handler.InventoryLogHandler) *http.ServeMux {
 
 	mux := http.NewServeMux()
+
+	mux.HandleFunc("GET /health", serverHandler.Health)
+	mux.HandleFunc("GET /readyz", serverHandler.Ready)
 
 	mux.HandleFunc("GET /api/v1/cafes", cafeHandler.GetAll)
 	mux.HandleFunc("GET /api/v1/cafes/{id}", cafeHandler.GetByID)
@@ -50,7 +53,6 @@ func NewRouter(cafeHandler *handler.CafeHandler, userHandler *handler.UserHandle
 	mux.HandleFunc("POST /api/v1/auth/login", authenHandler.Login)
 
 	mux.Handle("GET /swagger/", httpSwagger.WrapHandler)
-	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusOK) })
 
 	return mux
 }

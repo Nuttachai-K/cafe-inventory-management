@@ -81,7 +81,9 @@ func main() {
 	inventoryLogService := service.NewInventoryLogService(inventoryLogRepo)
 	inventoryLogHandler := handler.NewInventoryLogHandler(inventoryLogService)
 
-	mux := router.NewRouter(cafeHandler, userHandler, authHandler, productHandler, categoryHandler, inventoryHandler, inventoryLogHandler)
+	serverHandler := handler.NewServerHandler(db)
+
+	mux := router.NewRouter(serverHandler, cafeHandler, userHandler, authHandler, productHandler, categoryHandler, inventoryHandler, inventoryLogHandler)
 
 	addr := os.Getenv("SERVER_ADDRESS")
 	if addr == "" {

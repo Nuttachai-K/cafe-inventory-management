@@ -1232,6 +1232,24 @@ paths:
       summary: Update a user
       tags:
       - users
+  /health:
+    get:
+      responses:
+        "200":
+          description: OK
+      summary: Liveness check
+      tags:
+      - server
+  /readyz:
+    get:
+      responses:
+        "200":
+          description: OK
+        "503":
+          description: Service Unavailable
+      summary: Readiness check
+      tags:
+      - server
 schemes:
 - http
 securityDefinitions:
