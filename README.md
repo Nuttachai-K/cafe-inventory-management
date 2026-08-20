@@ -324,7 +324,7 @@ The API is now available at `http://localhost:8080`.
 ```bash
 curl -X POST http://localhost:8080/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@cafe.local","password":"admin123"}'
+  -d '{"email":"admin@cafe.local","password":"admin"}'
 ```
 
 ```json
