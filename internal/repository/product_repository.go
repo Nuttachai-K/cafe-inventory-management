@@ -12,7 +12,7 @@ import (
 
 type ProductRepository interface {
 	GetByID(ctx context.Context, id int) (*model.ProductWithCategory, error)
-	GetAll(ctx context.Context, limit int) ([]model.ProductWithCategory, error)
+	GetAll(ctx context.Context, productName string, limit int) ([]model.ProductWithCategory, error)
 
 	Create(ctx context.Context, product *model.Product) error
 	Update(ctx context.Context, id int, pu *model.ProductUpdate) (*model.ProductWithCategory, error)
@@ -35,22 +35,31 @@ func (p *productRepository) GetByID(ctx context.Context, id int) (*model.Product
 	err := p.db.QueryRow(
 		ctx,
 		`SELECT
-			id,
-			cafe_id,
-			category_id,
-			name,
-			description,
-			price,
+			products.id,
+			products.cafe_id,
+			cafes.name,
+			products.category_id,
+			categories.name,
+			products.name,
+			products.description,
+			products.price,
 			is_active,
-			created_at,
-			updated_at
+			products.created_at,
+			products.updated_at
 		FROM products
-		WHERE id = $1`,
+		JOIN categories 
+		ON products.category_id = categories.id
+		JOIN cafes 
+		ON products.cafe_id = cafes.id
+		WHERE is_active = true 
+		 AND products.id = $1`,
 		id,
 	).Scan(
 		&product.ID,
 		&product.CafeId,
+		&product.CafeName,
 		&product.CategoryId,
+		&product.CategoryName,
 		&product.Name,
 		&product.Description,
 		&product.Price,
@@ -65,30 +74,39 @@ func (p *productRepository) GetByID(ctx context.Context, id int) (*model.Product
 	return &product, err
 }
 
-func (p *productRepository) GetAll(ctx context.Context, limit int) ([]model.ProductWithCategory, error) {
+func (p *productRepository) GetAll(ctx context.Context, productName string, limit int) ([]model.ProductWithCategory, error) {
 
 	query := `
 		SELECT
 			products.id,
 			products.cafe_id,
+			cafes.name,
 			products.category_id,
 			categories.name,
 			products.name,
 			products.description,
 			products.price,
-			is_active,
+			products.is_active,
 			products.created_at,
 			products.updated_at
 		FROM products
 		JOIN categories 
 		ON products.category_id = categories.id
-		WHERE is_active = true
+		JOIN cafes 
+		ON products.cafe_id = cafes.id
+		WHERE products.is_active = true 
 		`
 
 	args := []any{}
 	argID := 1
 
-	query += " ORDER BY id"
+	if productName != "" {
+		query += fmt.Sprintf(" AND products.name ILIKE $%d", argID)
+		args = append(args, "%"+productName+"%")
+		argID++
+	}
+
+	query += " ORDER BY products.id"
 
 	if limit > 0 {
 		query += fmt.Sprintf(" LIMIT $%d", argID)
@@ -109,6 +127,7 @@ func (p *productRepository) GetAll(ctx context.Context, limit int) ([]model.Prod
 		err := rows.Scan(
 			&product.ID,
 			&product.CafeId,
+			&product.CafeName,
 			&product.CategoryId,
 			&product.CategoryName,
 			&product.Name,

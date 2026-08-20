@@ -60,12 +60,15 @@ func (h *ProductHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 // @Tags products
 // @Accept json
 // @Produce json
+// @Param name query string false "Product name"
 // @Param limit query int false "Max results to return (default 20)"
 // @Success 200 {array} model.ProductWithCategory
 // @Failure 400 {object} model.ErrorResponse "invalid limit"
 // @Failure 500 {object} model.ErrorResponse "internal server error"
 // @Router /api/v1/products [get]
 func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
+
+	productName := r.URL.Query().Get("name")
 
 	limit := 20
 	if l := r.URL.Query().Get("limit"); l != "" {
@@ -79,6 +82,7 @@ func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 
 	products, err := h.service.GetAll(
 		r.Context(),
+		productName,
 		limit,
 	)
 	if err != nil {

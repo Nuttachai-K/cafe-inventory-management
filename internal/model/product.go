@@ -31,6 +31,7 @@ type ProductUpdate struct {
 type ProductWithCategory struct {
 	ID           int             `json:"id"`
 	CafeId       int             `json:"cafe_id"`
+	CafeName     string          `json:"cafe_name"`
 	CategoryId   int             `json:"category_id"`
 	CategoryName string          `json:"category_name"`
 	Name         string          `json:"name"`

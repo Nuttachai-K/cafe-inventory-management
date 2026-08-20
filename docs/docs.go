@@ -1002,6 +1002,12 @@ const docTemplate = `{
                 "summary": "Get all products",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Product name",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Max results to return (default 20)",
                         "name": "limit",
@@ -1582,20 +1588,14 @@ const docTemplate = `{
         "model.Cafe": {
             "type": "object",
             "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "closing_time": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "distance_km": {
-                    "type": "number"
-                },
                 "id": {
                     "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
                 },
                 "latitude": {
                     "type": "number"
@@ -1603,13 +1603,19 @@ const docTemplate = `{
                 "longitude": {
                     "type": "number"
                 },
-                "name": {
-                    "type": "string"
-                },
                 "nearest_station": {
                     "type": "string"
                 },
+                "distance_km": {
+                    "type": "number"
+                },
                 "opening_time": {
+                    "type": "string"
+                },
+                "closing_time": {
+                    "type": "string"
+                },
+                "created_at": {
                     "type": "string"
                 },
                 "updated_at": {
@@ -1620,10 +1626,10 @@ const docTemplate = `{
         "model.CafeCreate": {
             "type": "object",
             "properties": {
-                "address": {
+                "name": {
                     "type": "string"
                 },
-                "closing_time": {
+                "address": {
                     "type": "string"
                 },
                 "latitude": {
@@ -1632,13 +1638,13 @@ const docTemplate = `{
                 "longitude": {
                     "type": "number"
                 },
-                "name": {
-                    "type": "string"
-                },
                 "nearest_station": {
                     "type": "string"
                 },
                 "opening_time": {
+                    "type": "string"
+                },
+                "closing_time": {
                     "type": "string"
                 }
             }
@@ -1646,10 +1652,10 @@ const docTemplate = `{
         "model.CafeUpdate": {
             "type": "object",
             "properties": {
-                "address": {
+                "name": {
                     "type": "string"
                 },
-                "closing_time": {
+                "address": {
                     "type": "string"
                 },
                 "latitude": {
@@ -1658,13 +1664,13 @@ const docTemplate = `{
                 "longitude": {
                     "type": "number"
                 },
-                "name": {
-                    "type": "string"
-                },
                 "nearest_station": {
                     "type": "string"
                 },
                 "opening_time": {
+                    "type": "string"
+                },
+                    "closing_time": {
                     "type": "string"
                 }
             }
@@ -1672,13 +1678,13 @@ const docTemplate = `{
         "model.Category": {
             "type": "object",
             "properties": {
-                "created_at": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "created_at": {
                     "type": "string"
                 },
                 "updated_at": {
@@ -1697,23 +1703,23 @@ const docTemplate = `{
         "model.InventoryLog": {
             "type": "object",
             "properties": {
-                "change_quantity": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
                 "inventory_id": {
                     "type": "integer"
                 },
+                "user_id": {
+                    "type": "integer"
+                },
                 "operation": {
                     "type": "string"
                 },
-                "user_id": {
+                "change_quantity": {
                     "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
                 }
             }
         },
@@ -1731,12 +1737,6 @@ const docTemplate = `{
         "model.InventoryWithProduct": {
             "type": "object",
             "properties": {
-                "cafe_id": {
-                    "type": "integer"
-                },
-                "cafe_name": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
@@ -1744,6 +1744,12 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "product_name": {
+                    "type": "string"
+                },
+                "cafe_id": {
+                    "type": "integer"
+                },
+                "cafe_name": {
                     "type": "string"
                 },
                 "stock_quantity": {
@@ -1763,10 +1769,10 @@ const docTemplate = `{
                 "category_id": {
                     "type": "integer"
                 },
-                "description": {
+                "name": {
                     "type": "string"
                 },
-                "name": {
+                "description": {
                     "type": "string"
                 },
                 "price": {
@@ -1783,25 +1789,31 @@ const docTemplate = `{
                 "category_id": {
                     "type": "integer"
                 },
-                "description": {
+                "name": {
                     "type": "string"
                 },
-                "is_active": {
-                    "type": "boolean"
-                },
-                "name": {
+                "description": {
                     "type": "string"
                 },
                 "price": {
                     "type": "number"
+                },
+                "is_active": {
+                    "type": "boolean"
                 }
             }
         },
         "model.ProductWithCategory": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "cafe_id": {
                     "type": "integer"
+                },
+                "cafe_name": {
+                    "type": "string"
                 },
                 "category_id": {
                     "type": "integer"
@@ -1809,23 +1821,20 @@ const docTemplate = `{
                 "category_name": {
                     "type": "string"
                 },
-                "created_at": {
+                "name": {
                     "type": "string"
                 },
                 "description": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
+                "price": {
+                    "type": "number"
                 },
                 "is_active": {
                     "type": "boolean"
                 },
-                "name": {
+                "created_at": {
                     "type": "string"
-                },
-                "price": {
-                    "type": "number"
                 },
                 "updated_at": {
                     "type": "string"
@@ -1835,28 +1844,28 @@ const docTemplate = `{
         "model.User": {
             "type": "object",
             "properties": {
-                "created_at": {
+                "id": {
+                    "type": "integer"
+                },
+                "username": {
                     "type": "string"
                 },
                 "email": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
                 "password": {
-                    "type": "string"
-                },
-                "updated_at": {
                     "type": "string"
                 },
                 "user_role": {
                     "$ref": "#/definitions/model.UserRole"
                 },
-                "username": {
+                "is_active": {
+                    "type": "boolean"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -1864,6 +1873,9 @@ const docTemplate = `{
         "model.UserCreate": {
             "type": "object",
             "properties": {
+                "username": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -1872,9 +1884,6 @@ const docTemplate = `{
                 },
                 "user_role": {
                     "$ref": "#/definitions/model.UserRole"
-                },
-                "username": {
-                    "type": "string"
                 }
             }
         },
@@ -1892,14 +1901,14 @@ const docTemplate = `{
         "model.UserUpdate": {
             "type": "object",
             "properties": {
-                "email": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
-                "is_active": {
-                    "type": "boolean"
+                "username": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
                 },
                 "password": {
                     "type": "string"
@@ -1910,8 +1919,8 @@ const docTemplate = `{
                 "user_role": {
                     "$ref": "#/definitions/model.UserRole"
                 },
-                "username": {
-                    "type": "string"
+                "is_active": {
+                    "type": "boolean"
                 }
             }
         }

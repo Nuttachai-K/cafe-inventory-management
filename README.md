@@ -291,13 +291,13 @@ Authorization: Bearer <JWT Token>
 Create a `.env` file in the project root:
 
 ```env
-POSTGRES_USER=cafe
-POSTGRES_PASSWORD=cafe
-POSTGRES_DB=cafe_inventory
+POSTGRES_USER="cafe"
+POSTGRES_PASSWORD="cafe"
+POSTGRES_DB="cafe_inventory"
 POSTGRES_PORT=5432
 
-DATABASE_URL=postgres://cafe:cafe@localhost:5432/cafe_inventory?sslmode=disable
-
+DATABASE_URL="postgres://cafe:cafe@localhost:5432/cafe_inventory?sslmode=disable"
+SERVER_ADDRESS=":8080"
 JWT_SECRET=<a long random string>
 ```
 
@@ -324,7 +324,7 @@ The API is now available at `http://localhost:8080`.
 ```bash
 curl -X POST http://localhost:8080/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@cafe.local","password":"admin123"}'
+  -d '{"email":"admin@cafe.local","password":"admin"}'
 ```
 
 ```json

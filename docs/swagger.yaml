@@ -153,6 +153,8 @@ definitions:
         type: integer
       cafe_id:
         type: integer
+      cafe_name:
+        type: string
       category_id:
         type: integer
       category_name:
@@ -863,6 +865,10 @@ paths:
       consumes:
       - application/json
       parameters:
+      - description: Product name
+        in: query
+        name: name
+        type: string
       - description: Max results to return (default 20)
         in: query
         name: limit

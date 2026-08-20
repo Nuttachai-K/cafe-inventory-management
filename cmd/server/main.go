@@ -1,11 +1,17 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/joho/godotenv"
 
+	"github.com/Nuttachai-K/cafe-inventory-management/docs"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/database"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/handler"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/middleware"
@@ -43,6 +49,9 @@ func main() {
 	}
 	defer db.Close()
 
+	docs.SwaggerInfo.Host = os.Getenv("SWAGGER_HOST")
+	docs.SwaggerInfo.Schemes = []string{"http"}
+
 	cafeRepo := repository.NewCafeRepository(db)
 	cafeService := service.NewCafeService(cafeRepo)
 	cafeHandler := handler.NewCafeHandler(cafeService)
@@ -72,5 +81,33 @@ func main() {
 
 	mux := router.NewRouter(cafeHandler, userHandler, authHandler, productHandler, categoryHandler, inventoryHandler, inventoryLogHandler)
 
-	http.ListenAndServe(":8080", middleware.CorsMiddleware(mux))
+	addr := os.Getenv("SERVER_ADDRESS")
+	if addr == "" {
+		log.Fatal("SERVER_ADDRESS environment variable is not set")
+	}
+	srv := &http.Server{
+		Addr:    addr,
+		Handler: middleware.CorsMiddleware(mux),
+	}
+
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
+	defer stop()
+
+	log.Printf("starting server on %s", srv.Addr)
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("server error: %v", err)
+		}
+	}()
+
+	<-ctx.Done()
+	log.Println("shutdown signal received, draining connections")
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 25*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		log.Printf("graceful shutdown failed: %v", err)
+	}
 }
