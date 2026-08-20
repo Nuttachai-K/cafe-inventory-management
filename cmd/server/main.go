@@ -11,6 +11,7 @@ import (
 
 	"github.com/joho/godotenv"
 
+	"github.com/Nuttachai-K/cafe-inventory-management/docs"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/database"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/handler"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/middleware"
@@ -47,6 +48,9 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
+
+	docs.SwaggerInfo.Host = os.Getenv("SWAGGER_HOST")
+	docs.SwaggerInfo.Schemes = []string{"http"}
 
 	cafeRepo := repository.NewCafeRepository(db)
 	cafeService := service.NewCafeService(cafeRepo)
