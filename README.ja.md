@@ -295,6 +295,7 @@ POSTGRES_PASSWORD="cafe"
 POSTGRES_DB="cafe_inventory"
 POSTGRES_PORT=5432
 
+DB_MAX_CONNS=10
 DATABASE_URL="postgres://cafe:cafe@localhost:5432/cafe_inventory?sslmode=disable"
 SERVER_ADDRESS=":8080"
 JWT_SECRET=<十分に長いランダムな文字列>
