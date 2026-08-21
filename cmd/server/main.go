@@ -51,7 +51,11 @@ func main() {
 
 	if host := os.Getenv("SWAGGER_HOST"); host != "" {
 		docs.SwaggerInfo.Host = host
-		docs.SwaggerInfo.Schemes = []string{"http"}
+		scheme := os.Getenv("SWAGGER_SCHEME")
+		if scheme == "" {
+			scheme = "https"
+		}
+		docs.SwaggerInfo.Schemes = []string{scheme}
 	}
 
 	cafeRepo := repository.NewCafeRepository(db)

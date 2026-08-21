@@ -199,6 +199,15 @@ inventory_logs
 
 # API Overview
 
+## Server
+
+| Method | Endpoint | Description |
+|---------|----------|--------------|
+| GET | /health | Liveness check |
+| GET | /readyz | Readiness check — pings the database, returns 503 if unreachable |
+
+---
+
 ## Authentication
 
 | Method | Endpoint |
@@ -291,6 +300,8 @@ Authorization: Bearer <JWT Token>
 Create a `.env` file in the project root:
 
 ```env
+# Used by docker-compose to provision the local Postgres container only —
+# the app itself connects using DATABASE_URL below, not these directly.
 POSTGRES_USER="cafe"
 POSTGRES_PASSWORD="cafe"
 POSTGRES_DB="cafe_inventory"
@@ -299,24 +310,37 @@ POSTGRES_PORT=5432
 DB_MAX_CONNS=10
 DATABASE_URL="postgres://cafe:cafe@localhost:5432/cafe_inventory?sslmode=disable"
 SERVER_ADDRESS=":8080"
-JWT_SECRET=<a long random string>
+JWT_SECRET=2445f32fe37472df7bd5e626929c471a4b6318e87f1d1e61cd33d7ceba31bb21
+
+# Optional. Only needed when Swagger UI is served behind a reverse proxy or
+# load balancer (e.g. AWS ALB) whose public host/scheme differs from the
+# container's own address. SWAGGER_SCHEME defaults to "https" if unset.
+SWAGGER_HOST=your-domain.example.com
+SWAGGER_SCHEME=https
 ```
 
-## 2. Start the database and run migrations
+## 2. Start everything with Docker Compose
 
 ```bash
 docker-compose up -d
 ```
 
-This starts PostgreSQL and runs all migrations, including a seeded admin user (`admin@cafe.local`).
+This starts PostgreSQL, runs all migrations (including a seeded admin user, `admin@cafe.local`), builds the API image, and starts the API server.
 
-## 3. Start the API server
+The API is now available at `http://localhost:8080`.
+
+> **Note:** with this flow, `DATABASE_URL` in your `.env` must point at the Postgres **service name**, not `localhost` — e.g. `postgres://cafe:cafe@postgres:5432/cafe_inventory?sslmode=disable` — since the app runs inside the same Docker network as Postgres.
+
+### Alternative: run the API outside Docker
+
+If you'd rather run the Go binary directly on the host (e.g. for local development), stop the compose-managed app container first so it doesn't also bind port 8080:
 
 ```bash
+docker-compose stop app
 go run cmd/server/main.go
 ```
 
-The API is now available at `http://localhost:8080`.
+In this case, switch `DATABASE_URL`'s host back to `localhost` (Postgres' port is published to the host by docker-compose), e.g. `postgres://cafe:cafe@localhost:5432/cafe_inventory?sslmode=disable`.
 
 ## 4. Walkthrough: login → create data → adjust stock → view history
 
