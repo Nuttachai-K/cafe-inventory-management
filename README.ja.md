@@ -199,6 +199,15 @@ inventory_logs
 
 # API 概要
 
+## サーバー
+
+| Method | Endpoint | 説明 |
+|---------|----------|------|
+| GET | /health | 生存確認（Liveness check） |
+| GET | /readyz | 準備確認（Readiness check）。データベースに ping し、接続できない場合は 503 を返します |
+
+---
+
 ## 認証
 
 | Method | Endpoint |
@@ -290,6 +299,8 @@ Authorization: Bearer <JWT Token>
 プロジェクトルートに `.env` ファイルを作成します。
 
 ```env
+# docker-compose がローカルの Postgres コンテナを構築するためだけに使用します。
+# アプリ本体はこれらを直接使わず、下の DATABASE_URL で接続します。
 POSTGRES_USER="cafe"
 POSTGRES_PASSWORD="cafe"
 POSTGRES_DB="cafe_inventory"
@@ -298,24 +309,37 @@ POSTGRES_PORT=5432
 DB_MAX_CONNS=10
 DATABASE_URL="postgres://cafe:cafe@localhost:5432/cafe_inventory?sslmode=disable"
 SERVER_ADDRESS=":8080"
-JWT_SECRET=<十分に長いランダムな文字列>
+JWT_SECRET=2445f32fe37472df7bd5e626929c471a4b6318e87f1d1e61cd33d7ceba31bb21
+
+# 任意設定。Swagger UI をリバースプロキシやロードバランサー（AWS ALB など）の
+# 背後で公開し、公開用のホスト名・スキームがコンテナ自身のアドレスと異なる場合のみ必要です。
+# SWAGGER_SCHEME は未設定の場合 "https" になります。
+SWAGGER_HOST=your-domain.example.com
+SWAGGER_SCHEME=https
 ```
 
-## 2. データベースを起動しマイグレーションを実行する
+## 2. Docker Compose で一括起動する
 
 ```bash
 docker-compose up -d
 ```
 
-これにより PostgreSQL が起動し、シードデータとして登録される管理者ユーザー（`admin@cafe.local`）を含む全マイグレーションが実行されます。
+これにより PostgreSQL が起動し、シードデータとして登録される管理者ユーザー（`admin@cafe.local`）を含む全マイグレーションが実行され、APIイメージのビルドとAPIサーバーの起動まで行われます。
 
-## 3. APIサーバーを起動する
+これでAPIは `http://localhost:8080` で利用可能になります。
+
+> **注意:** この方法で起動する場合、`.env` の `DATABASE_URL` は `localhost` ではなく Postgres の **サービス名** を指す必要があります。例: `postgres://cafe:cafe@postgres:5432/cafe_inventory?sslmode=disable`。アプリは Postgres と同じ Docker ネットワーク内で動作するためです。
+
+### 代替方法：APIをコンテナ外で起動する
+
+Go のバイナリをホスト上で直接実行したい場合（ローカル開発など）は、先に compose 管理下のアプリコンテナを停止してポート8080の競合を避けてください。
 
 ```bash
+docker-compose stop app
 go run cmd/server/main.go
 ```
 
-これでAPIは `http://localhost:8080` で利用可能になります。
+この場合は `DATABASE_URL` のホストを `localhost` に戻してください（Postgres のポートは docker-compose によりホストに公開されています）。例: `postgres://cafe:cafe@localhost:5432/cafe_inventory?sslmode=disable`。
 
 ## 4. 一連の流れ：ログイン → データ作成 → 在庫更新 → 履歴確認
 
