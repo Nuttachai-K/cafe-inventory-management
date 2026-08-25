@@ -35,6 +35,9 @@ func writeError(w http.ResponseWriter, err error) {
 	case errors.Is(err, service.ErrUserInactive):
 		utils.WriteJSONError(w, err.Error(), http.StatusUnauthorized)
 
+	case errors.Is(err, service.ErrInvalidUserRole):
+		utils.WriteJSONError(w, err.Error(), http.StatusBadRequest)
+
 	default:
 		utils.WriteJSONError(w, "internal server error", http.StatusInternalServerError)
 	}
