@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/mail"
+	"strings"
 
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/model"
 	"github.com/Nuttachai-K/cafe-inventory-management/internal/repository"
@@ -59,6 +60,7 @@ func (s *userService) Create(ctx context.Context, user *model.User) error {
 		return fmt.Errorf("%w: email is not in correct format", ErrInvalidInput)
 	}
 
+	user.UserRole = model.UserRole(strings.ToUpper(strings.TrimSpace(string(user.UserRole))))
 	if !user.UserRole.Valid() {
 		return ErrInvalidUserRole
 	}
@@ -97,8 +99,12 @@ func (s *userService) Update(ctx context.Context, id int, uu *model.UserUpdate) 
 		}
 	}
 
-	if uu.UserRole != nil && !uu.UserRole.Valid() {
-		return nil, ErrInvalidUserRole
+	if uu.UserRole != nil {
+		normalized := model.UserRole(strings.ToUpper(strings.TrimSpace(string(*uu.UserRole))))
+		if !normalized.Valid() {
+			return nil, ErrInvalidUserRole
+		}
+		uu.UserRole = &normalized
 	}
 
 	if uu.Password != nil {
