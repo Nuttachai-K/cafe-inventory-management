@@ -309,7 +309,7 @@ POSTGRES_PORT=5432
 DB_MAX_CONNS=10
 DATABASE_URL="postgres://cafe:cafe@localhost:5432/cafe_inventory?sslmode=disable"
 SERVER_ADDRESS=":8080"
-JWT_SECRET=2445f32fe37472df7bd5e626929c471a4b6318e87f1d1e61cd33d7ceba31bb21
+JWT_SECRET=<generate with: openssl rand -hex 32>
 
 # 任意設定。Swagger UI をリバースプロキシやロードバランサー（AWS ALB など）の
 # 背後で公開し、公開用のホスト名・スキームがコンテナ自身のアドレスと異なる場合のみ必要です。

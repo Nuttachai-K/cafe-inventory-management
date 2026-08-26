@@ -310,7 +310,7 @@ POSTGRES_PORT=5432
 DB_MAX_CONNS=10
 DATABASE_URL="postgres://cafe:cafe@localhost:5432/cafe_inventory?sslmode=disable"
 SERVER_ADDRESS=":8080"
-JWT_SECRET=2445f32fe37472df7bd5e626929c471a4b6318e87f1d1e61cd33d7ceba31bb21
+JWT_SECRET=<generate with: openssl rand -hex 32>
 
 # Optional. Only needed when Swagger UI is served behind a reverse proxy or
 # load balancer (e.g. AWS ALB) whose public host/scheme differs from the
