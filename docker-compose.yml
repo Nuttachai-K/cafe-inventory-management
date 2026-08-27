@@ -46,6 +46,19 @@ services:
       - "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
       - "down"
 
+  bootstrap:
+    build: .
+    profiles:
+      - tools
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    command: ["/app/bootstrap"]
+  
   app:
     build: .
     restart: unless-stopped
