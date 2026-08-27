@@ -312,6 +312,11 @@ DATABASE_URL="postgres://cafe:cafe@localhost:5432/cafe_inventory?sslmode=disable
 SERVER_ADDRESS=":8080"
 JWT_SECRET=<generate with: openssl rand -hex 32>
 
+# Read only by cmd/bootstrap, which creates the first ADMIN user.
+# Not used by the API server.
+ADMIN_EMAIL="admin@example.com"
+ADMIN_PASSWORD=<generate with: openssl rand -base64 24>
+
 # Optional. Only needed when Swagger UI is served behind a reverse proxy or
 # load balancer (e.g. AWS ALB) whose public host/scheme differs from the
 # container's own address. SWAGGER_SCHEME defaults to "https" if unset.
@@ -325,7 +330,7 @@ SWAGGER_SCHEME=https
 docker-compose up -d
 ```
 
-This starts PostgreSQL, runs all migrations (including a seeded admin user, `admin@cafe.local`), builds the API image, and starts the API server.
+This starts PostgreSQL, runs all migrations, builds the API image, and starts the API server.
 
 The API is now available at `http://localhost:8080`.
 
@@ -342,14 +347,38 @@ go run cmd/server/main.go
 
 In this case, switch `DATABASE_URL`'s host back to `localhost` (Postgres' port is published to the host by docker-compose), e.g. `postgres://cafe:cafe@localhost:5432/cafe_inventory?sslmode=disable`.
 
+## 3. Create the first admin user
+
+Migrations create the schema but no users. `POST /api/v1/users` requires an
+authenticated admin, so the first one has to be created out of band:
+
+```bash
+docker-compose run --rm bootstrap
+```
+
+This reads `ADMIN_EMAIL` and `ADMIN_PASSWORD` from your `.env`, hashes the
+password with bcrypt, and inserts the account. It is safe to re-run — if the
+account already exists it is left untouched, so a redeploy will not reset a
+password that has since been changed.
+
+To run it outside Docker instead:
+
+```bash
+go run ./cmd/bootstrap
+```
+
+> Earlier versions of this project seeded an admin account directly in
+> migration `000003`, which put a bcrypt hash in version control. Supplying
+> the credential at run time keeps it out of the repository.
+
 ## 4. Walkthrough: login → create data → adjust stock → view history
 
-**Login as the seeded admin:**
+**Log in as the admin you created in step 3:**
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@cafe.local","password":"admin"}'
+  -d '{"email":"'"$ADMIN_EMAIL"'","password":"'"$ADMIN_PASSWORD"'"}'
 ```
 
 ```json

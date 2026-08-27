@@ -311,6 +311,11 @@ DATABASE_URL="postgres://cafe:cafe@localhost:5432/cafe_inventory?sslmode=disable
 SERVER_ADDRESS=":8080"
 JWT_SECRET=<generate with: openssl rand -hex 32>
 
+# cmd/bootstrap のみが読み込みます。最初の ADMIN ユーザーを作成するための値です。
+# APIサーバー本体では使用しません。
+ADMIN_EMAIL="admin@example.com"
+ADMIN_PASSWORD=<generate with: openssl rand -base64 24>
+
 # 任意設定。Swagger UI をリバースプロキシやロードバランサー（AWS ALB など）の
 # 背後で公開し、公開用のホスト名・スキームがコンテナ自身のアドレスと異なる場合のみ必要です。
 # SWAGGER_SCHEME は未設定の場合 "https" になります。
@@ -324,7 +329,7 @@ SWAGGER_SCHEME=https
 docker-compose up -d
 ```
 
-これにより PostgreSQL が起動し、シードデータとして登録される管理者ユーザー（`admin@cafe.local`）を含む全マイグレーションが実行され、APIイメージのビルドとAPIサーバーの起動まで行われます。
+これにより PostgreSQL が起動し、全マイグレーションが実行され、APIイメージのビルドとAPIサーバーの起動まで行われます。
 
 これでAPIは `http://localhost:8080` で利用可能になります。
 
@@ -341,14 +346,39 @@ go run cmd/server/main.go
 
 この場合は `DATABASE_URL` のホストを `localhost` に戻してください（Postgres のポートは docker-compose によりホストに公開されています）。例: `postgres://cafe:cafe@localhost:5432/cafe_inventory?sslmode=disable`。
 
+## 3. 最初の管理者ユーザーを作成する
+
+マイグレーションはスキーマのみを作成し、ユーザーは作成しません。
+`POST /api/v1/users` は管理者の認証を必要とするため、最初の1人だけは
+API の外から作成する必要があります。
+
+```bash
+docker-compose run --rm bootstrap
+```
+
+`.env` の `ADMIN_EMAIL` と `ADMIN_PASSWORD` を読み込み、パスワードを bcrypt で
+ハッシュ化して登録します。冪等な処理のため再実行しても、既存アカウントは
+変更されません。そのためデプロイ後に実行しても、変更済みのパスワードを
+初期値に戻すことはありません。
+
+Docker を使わずに実行する場合:
+
+```bash
+go run ./cmd/bootstrap
+```
+
+> 以前はマイグレーション `000003` で管理者アカウントを直接シードしていましたが、
+> それは bcrypt ハッシュをバージョン管理下に置くことを意味していました。
+> 実行時に認証情報を渡す方式にすることで、リポジトリに残らないようにしています。
+
 ## 4. 一連の流れ：ログイン → データ作成 → 在庫更新 → 履歴確認
 
-**シードされた管理者としてログイン:**
+**手順3で作成した管理者としてログイン:**
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@cafe.local","password":"admin"}'
+  -d '{"email":"'"$ADMIN_EMAIL"'","password":"'"$ADMIN_PASSWORD"'"}'
 ```
 
 ```json
