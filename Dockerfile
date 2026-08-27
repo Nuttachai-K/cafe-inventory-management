@@ -23,4 +23,4 @@ COPY --from=builder /bootstrap /app/bootstrap
 USER app
 EXPOSE 8080
 
-ENTRYPOINT ["/app/server"]
+CMD ["/app/server"]
